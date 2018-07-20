@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/background"
+    tools:context=".Change_pwActivity">
+
+    <Button
+        android:id="@+id/btnVerfypw"
+        android:layout_width="145dp"
+        android:layout_height="60dp"
+        android:layout_marginBottom="140dp"
+        android:layout_marginStart="24dp"
+        android:onClick="FindDoneClicked"
+        android:text="Cancel"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/btnFindCancel"
+        android:layout_width="145dp"
+        android:layout_height="60dp"
+        android:layout_marginBottom="140dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginStart="32dp"
+        android:onClick="OnCancelClicked"
+        android:text="Done"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.727"
+        app:layout_constraintStart_toEndOf="@+id/btnVerfypw" />
+
+    <EditText
+        android:id="@+id/edtNewPW"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="24dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="28dp"
+        android:ems="10"
+        android:hint="New Password"
+        android:inputType="textPassword"
+        android:textColorHint="#A8AEB9"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edtOldPW" />
+
+    <EditText
+        android:id="@+id/edtOldPW"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="130dp"
+        android:ems="10"
+        android:hint="Old Password"
+        android:inputType="textPassword"
+        android:textColorHint="#A8AEB9"
+        app:layout_constraintEnd_toStartOf="@+id/btnFindConfirm"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/edtNewPW2"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="28dp"
+        android:ems="10"
+        android:hint="Confirm Password"
+        android:inputType="text|textPassword"
+        android:textColorHint="#A8AEB9"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edtNewPW" />
+
+    <Button
+        android:id="@+id/btnFindConfirm"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="130dp"
+        android:text="Confirm"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</android.support.constraint.ConstraintLayout>
