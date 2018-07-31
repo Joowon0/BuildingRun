@@ -1,7 +1,7 @@
 <?php
 return [
     'settings' => [
-        // comment this line when deploy to production environment
+       // comment this line when deploy to production environment
         'displayErrorDetails' => true,
         // View settings
         'view' => [
@@ -12,6 +12,14 @@ return [
                 'auto_reload' => true,
             ],
         ],
+	'dbSettings' => array (
+		'db' => array (
+			'host' => '127.0.0.1',
+			'user' => 'root',
+			'pass' => '12345678',
+			'dbname' => 'Total_schema'
+		),
+	),
 
         // doctrine settings
         'doctrine' => [
