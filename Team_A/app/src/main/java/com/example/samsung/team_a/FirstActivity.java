@@ -6,7 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 public class FirstActivity extends AppCompatActivity {
-    public static String connectIP = "";
+    public static String connectIP = "teama-iot.calit2.net/doyoung";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -15,5 +15,13 @@ public class FirstActivity extends AppCompatActivity {
     public void enterOnClick(View arg0) {
         Intent in = new Intent(getApplicationContext(), loginActivity.class);
         startActivity(in);
+    }
+
+    @Override
+    public void onBackPressed() {
+        moveTaskToBack(true);
+        finish();
+        android.os.Process.killProcess(android.os.Process.myPid());
+
     }
 }

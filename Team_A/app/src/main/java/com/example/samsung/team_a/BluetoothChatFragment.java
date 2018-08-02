@@ -82,7 +82,7 @@ public class BluetoothChatFragment extends Fragment {
      * Member object for the chat services
      */
     private BluetoothChatService mChatService = null;
-
+    public static String AirQuality;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -125,7 +125,6 @@ public class BluetoothChatFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
         // Performing this check in onResume() covers the case in which BT was
         // not enabled during onStart(), so we were paused to enable it...
         // onResume() will be called when ACTION_REQUEST_ENABLE activity returns.
@@ -178,7 +177,6 @@ public class BluetoothChatFragment extends Fragment {
 
         // Initialize the BluetoothChatService to perform bluetooth connections
         mChatService = new BluetoothChatService(getActivity(), mHandler);
-
         // Initialize the buffer for outgoing messages
         mOutStringBuffer = new StringBuffer("");
     }
@@ -302,6 +300,7 @@ public class BluetoothChatFragment extends Fragment {
                     // construct a string from the valid bytes in the buffer
                     String readMessage = new String(readBuf, 0, msg.arg1);
                     mConversationArrayAdapter.add(mConnectedDeviceName + ":  " + readMessage);
+                    AirQuality = readMessage;
                     break;
                 case Constants.MESSAGE_DEVICE_NAME:
                     // save the connected device's name

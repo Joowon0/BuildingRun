@@ -327,7 +327,6 @@ public class BluetoothChatService {
             Log.d(TAG, "Socket Type: " + mSocketType +
                     "BEGIN mAcceptThread" + this);
             setName("AcceptThread" + mSocketType);
-
             BluetoothSocket socket = null;
 
             // Listen to the server socket if we're not connected
@@ -357,7 +356,7 @@ public class BluetoothChatService {
                                 try {
                                     socket.close();
                                 } catch (IOException e) {
-                                    Log.e(TAG, "Could not close unwanted socket", e);
+                                    Log.e(TAG, "Could not uclose unwanted socket", e);
                                 }
                                 break;
                         }

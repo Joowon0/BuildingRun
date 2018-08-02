@@ -7,23 +7,4 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/btnChat"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="15dp"
-        android:layout_marginStart="20dp"
-        android:text="bluetooth Chat"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/btnChangepw"
-        android:layout_width="145dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:text="Change PW"
-        app:layout_constraintBottom_toTopOf="@+id/btnChat"
-        app:layout_constraintStart_toStartOf="parent" />
-
 </android.support.constraint.ConstraintLayout>

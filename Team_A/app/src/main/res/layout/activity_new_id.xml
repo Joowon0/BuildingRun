@@ -28,7 +28,8 @@
             android:inputType="textPersonName|textWebEmailAddress"
             android:paddingLeft="20dp"
             android:singleLine="false"
-            android:textColor="#000000"
+            android:textSize="18dp"
+            android:textColor="@android:color/white"
             android:textColorHint="#A8AEB9" />
 
         <Button
@@ -38,8 +39,7 @@
             android:layout_weight="1"
             android:onClick="checkIdButtonClick"
             android:scaleType="centerInside"
-            android:text="Authentication"
-            android:textSize="8dp" />
+            android:text="Confirm" />
 
     </LinearLayout>
 
@@ -49,7 +49,7 @@
         android:orientation="horizontal">
 
         <EditText
-            android:id="@+id/first_name"
+            android:id="@+id/edtFirstName"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_marginLeft="30dp"
@@ -61,11 +61,12 @@
             android:inputType="text"
             android:paddingLeft="20dp"
             android:singleLine="false"
-            android:textColor="#000000"
-            android:textColorHint="#A8AEB9" />
+            android:textColor="@android:color/white"
+            android:textColorHint="#A8AEB9"
+            android:textSize="18dp" />
 
         <EditText
-            android:id="@+id/last_name"
+            android:id="@+id/edtLastName"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_marginLeft="10dp"
@@ -77,8 +78,9 @@
             android:inputType="text"
             android:paddingLeft="20dp"
             android:singleLine="false"
-            android:textColor="#000000"
-            android:textColorHint="#A8AEB9" />
+            android:textColor="@android:color/white"
+            android:textColorHint="#A8AEB9"
+            android:textSize="18dp" />
     </LinearLayout>
 
     <EditText
@@ -92,8 +94,9 @@
         android:hint="Password"
         android:inputType="textPassword"
         android:paddingLeft="20dp"
+        android:textSize="18dp"
         android:singleLine="false"
-        android:textColor="#000000"
+        android:textColor="@android:color/white"
         android:textColorHint="#A8AEB9" />
 
     <EditText
@@ -108,7 +111,8 @@
         android:inputType="textPassword"
         android:paddingLeft="20dp"
         android:singleLine="false"
-        android:textColor="#000000"
+        android:textSize="18dp"
+        android:textColor="@android:color/white"
         android:textColorHint="#A8AEB9"/>
 
     <EditText
@@ -122,8 +126,9 @@
         android:hint="Phone number"
         android:inputType="phone"
         android:paddingLeft="20dp"
+        android:textSize="18dp"
         android:singleLine="false"
-        android:textColor="#000000"
+        android:textColor="@android:color/white"
         android:textColorHint="#A8AEB9" />
 
     <LinearLayout
@@ -138,6 +143,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
+            android:onClick="newIDButtonClick"
             android:text="Sign Up" />
 
         <LinearLayout

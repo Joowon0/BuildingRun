@@ -8,22 +8,23 @@
     tools:context=".Find_pwActivity">
 
     <Button
-        android:id="@+id/btnVerfypw"
+        android:id="@+id/btnFindCancel"
         android:layout_width="0dp"
         android:layout_height="70dp"
         android:layout_marginEnd="24dp"
         android:layout_marginStart="24dp"
+        android:layout_marginTop="8dp"
         android:onClick="OnVerifyClicked"
         android:text="Authentication"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edtNewPW"
+        app:layout_constraintTop_toBottomOf="@+id/edtFindEmail"
         app:layout_constraintVertical_bias="0.154" />
 
     <EditText
-        android:id="@+id/edtNewPW"
+        android:id="@+id/edtFindEmail"
         android:layout_width="0dp"
         android:layout_height="50dp"
         android:layout_marginEnd="24dp"
@@ -32,6 +33,8 @@
         android:ems="10"
         android:hint="Enter your E-mail"
         android:inputType="textPassword"
+        android:textColor="@android:color/white"
+        android:textSize="18dp"
         android:textColorHint="#A8AEB9"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

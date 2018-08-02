@@ -1,120 +1,120 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@mipmap/loginbackground"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@mipmap/background"
-    android:orientation="vertical"
-    tools:context=".loginActivity">
+    android:layout_height="match_parent">
 
-    <LinearLayout
+    <ImageView
+        android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:paddingTop="97dp">
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="25dp"
+        app:layout_constraintBottom_toTopOf="@+id/edtId"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.292"
+        app:srcCompat="@mipmap/applogo" />
 
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="130dp"
-            android:layout_marginRight="130dp"
-            app:srcCompat="@mipmap/applogo" />
+    <EditText
+        android:id="@+id/edtId"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginBottom="15dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="8dp"
+        android:ems="10"
+        android:gravity="center"
+        android:hint="Please enter your ID"
+        android:inputType="textPersonName"
+        android:paddingLeft="20dp"
+        android:singleLine="false"
+        android:textColor="#ffffff"
+        android:textColorHint="#A8AEB9"
+        app:layout_constraintBottom_toTopOf="@+id/edtPass"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
 
-        <ImageView
-            android:id="@+id/imageView2"
-            android:layout_width="match_parent"
-            android:layout_height="70dp"
-            android:layout_marginLeft="130dp"
-            android:layout_marginRight="130dp"
-            android:paddingBottom="30dp"
+    <EditText
+        android:id="@+id/edtPass"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginBottom="236dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginStart="40dp"
+        android:ems="10"
+        android:gravity="center"
+        android:hint="Please enter your PW"
+        android:inputType="textPassword"
+        android:paddingLeft="20dp"
+        android:singleLine="false"
+        android:textColor="#ffffff"
+        android:textColorHint="#A8AEB9"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent" />
 
-            app:srcCompat="@mipmap/teamlogo" />
-
-        <EditText
-            android:id="@+id/edtId"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginLeft="40dp"
-            android:layout_marginRight="40dp"
-            android:ems="10"
-            android:gravity="center"
-            android:hint="Please enter your ID"
-            android:inputType="textPersonName"
-            android:paddingLeft="20dp"
-            android:singleLine="false"
-            android:textColor="@android:color/black"
-            android:textColorHint="#A8AEB9" />
-
-        <EditText
-            android:id="@+id/edtPass"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginLeft="40dp"
-            android:layout_marginRight="40dp"
-            android:layout_marginTop="20dp"
-            android:ems="10"
-            android:gravity="center"
-            android:hint="Please enter your PW"
-            android:inputType="textPassword"
-            android:paddingLeft="20dp"
-            android:singleLine="false"
-            android:textColor="@android:color/black"
-            android:textColorHint="#A8AEB9" />
-
-    </LinearLayout>
-
-    <LinearLayout
+    <Button
+        android:id="@+id/btnLogin2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="136dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="8dp"
+        android:background="@mipmap/btnlogin"
+        android:onClick="loginButtonClick"
+        android:text="LOGIN"
+        android:textColor="@android:color/white"
+        android:textSize="22dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edtPass"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <Button
+        android:id="@+id/btn_find"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="60dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="40dp"
         android:layout_weight="1"
-        android:paddingTop="30dp"
-        android:orientation="vertical">
+        android:background="@mipmap/btnlogin"
+        android:onClick="find_pwButtonClick"
+        android:text="FIND PW"
+        android:textColor="@android:color/white"
+        android:textSize="22dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btnNewID"
+        app:layout_constraintStart_toStartOf="parent" />
 
-        <Button
-            android:id="@+id/btnLogin2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="40dp"
-            android:layout_marginRight="40dp"
-            android:background="@mipmap/btnlogin"
-            android:onClick="loginButtonClick"
-            android:visibility="visible" />
+    <Button
+        android:id="@+id/btnNewID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="60dp"
+        android:layout_marginEnd="40dp"
+        android:layout_weight="1"
+        android:background="@mipmap/btnlogin"
+        android:onClick="newIDButtonClick"
+        android:text="SIGN UP"
+        android:textColor="@android:color/white"
+        android:textSize="22dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:layout_marginTop="20dp"
-            android:paddingBottom="40dp"
-            android:paddingLeft="40dp"
-            android:paddingRight="40dp">
 
-            <Button
-                android:id="@+id/btn_find"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:layout_marginRight="10dp"
-                android:layout_marginBottom="10dp"
-                android:background="@mipmap/findpw"
-                android:onClick="find_pwButtonClick" />
-
-            <Button
-                android:id="@+id/btnNewID"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="10dp"
-                android:layout_marginBottom="10dp"
-                android:layout_weight="1"
-                android:background="@mipmap/signup"
-                android:onClick="newIDButtonClick" />
-        </LinearLayout>
-
-    </LinearLayout>
-
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>

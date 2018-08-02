@@ -1,18 +1,20 @@
 package com.example.samsung.team_a;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -28,20 +30,35 @@ import java.net.URLEncoder;
 public class loginActivity extends AppCompatActivity{
     EditText edtID, edtPass;
     Button btnLogin,btnFind,btnNewId;
-
+    AlertDialog alertdialog;
     public static String STuser_id="";
     public static String STuser_pass="";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_login);
         edtID = (EditText) findViewById(R.id.edtId);
         edtPass = (EditText) findViewById(R.id.edtPass);
         btnLogin=(Button) findViewById(R.id.btnLogin);
-
+        btnFind=(Button) findViewById(R.id.btn_find);
+        btnNewId=(Button) findViewById(R.id.btnNewID);
 
     } //onCreate
+    Handler sHandler = new Handler() {
+        public void handleMessage(Message msg) {
+            Intent i = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(i);
+        }
+    };
+
+    @Override
+    public void onBackPressed() {
+        Intent i = new Intent(getApplicationContext(), FirstActivity.class);
+        startActivity(i);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -49,16 +66,21 @@ public class loginActivity extends AppCompatActivity{
     }
 
     public void loginButtonClick(View v) {
-        /*String userIdValue = edtID.getText().toString();
+        String userIdValue = edtID.getText().toString();
         String userPassValue = edtPass.getText().toString();
-        String type ="login";
+        alertdialog= new AlertDialog.Builder(loginActivity.this).create();
+        if(edtID.getText().toString().equals("") ||edtPass.getText().toString().equals("")){
+            alertdialog.setTitle("message");
+            alertdialog.setMessage("Please input your information");
+            alertdialog.show();
+        }
+        else {
+            String type = "login";
 
-        loginBW loginbw = new loginBW(this);
-        loginbw.execute(type,userIdValue,userPassValue);
-*/
-        Intent i = new Intent(loginActivity.this, MainActivity.class);
-        loginActivity.this.startActivity(i);
-
+            loginBW loginbw = new loginBW(this);
+            loginbw.execute(type, userIdValue, userPassValue);
+            Log.d("ID =???",loginActivity.STuser_id);
+        }
     }
 
     public void newIDButtonClick(View v) {
@@ -67,15 +89,15 @@ public class loginActivity extends AppCompatActivity{
         Intent i = new Intent(loginActivity.this, newIdActivity.class);
         loginActivity.this.startActivity(i);
     }
-    public void find_pwButtonClick(View v) {
 
+    public void find_pwButtonClick(View v) {
         Intent i = new Intent(loginActivity.this, Find_pwActivity.class);
         loginActivity.this.startActivity(i);
     }
-
 }
 
-/*class loginBW extends AsyncTask<String, Void, String> {
+class loginBW extends AsyncTask<String, Void, String> {
+
     String type = "";
     Context context;
     AlertDialog alertdialog;
@@ -108,8 +130,8 @@ public class loginActivity extends AppCompatActivity{
                 httpURLConnection.setDoInput(true);
                 OutputStream outputstream=httpURLConnection.getOutputStream();
                 BufferedWriter bufferedWriter =new BufferedWriter(new OutputStreamWriter(outputstream,"UTF-8"));
-                String post_data = URLEncoder.encode("user_id","UTF-8")+"="+URLEncoder.encode(user_id,"UTF-8")
-                        +"&"+URLEncoder.encode("user_pass","UTF-8")+"="+URLEncoder.encode(user_pass,"UTF-8");
+                String post_data = URLEncoder.encode("EmailAddress","UTF-8")+"="+URLEncoder.encode(user_id,"UTF-8")
+                        +"&"+URLEncoder.encode("HPassword","UTF-8")+"="+URLEncoder.encode(user_pass,"UTF-8");
                 bufferedWriter.write(post_data);
                 bufferedWriter.flush();
                 bufferedWriter.close();
@@ -140,11 +162,9 @@ public class loginActivity extends AppCompatActivity{
     @Override
     protected void onPreExecute() {
         // TODO Auto-generated method stub
-
         alertdialog= new AlertDialog.Builder(context).create();
-        alertdialog.setTitle("메세지");
+        alertdialog.setTitle("message");
     }
-
     @Override
     protected void onPostExecute(String result) {
         // TODO Auto-generated method stub
@@ -152,21 +172,22 @@ public class loginActivity extends AppCompatActivity{
         {
             if(result.substring(1,2).equals("1"))
             {
-                alertdialog.setMessage("로그인에 성공하셨습니다.");
+                alertdialog.setMessage("Login success.");
                 Intent i = new Intent(context, MainActivity.class);
                 context.startActivity(i);
             }
             else
             {
-                alertdialog.setMessage("아이디와 비밀번호를 확인하세요.");
+                alertdialog.setMessage("Check your E-mail and Password.");
+                loginActivity.STuser_id="";
+                loginActivity.STuser_pass="";
             }
             alertdialog.show();
         }
     }
-
     @Override
     protected void onProgressUpdate(Void... values) {
         // TODO Auto-generated method stub
         super.onProgressUpdate(values);
     }
-}*/
+}

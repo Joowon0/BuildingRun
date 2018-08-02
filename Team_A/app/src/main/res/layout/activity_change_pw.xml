@@ -8,29 +8,29 @@
     tools:context=".Change_pwActivity">
 
     <Button
-        android:id="@+id/btnVerfypw"
+        android:id="@+id/btnFindCancel"
         android:layout_width="145dp"
         android:layout_height="60dp"
         android:layout_marginBottom="140dp"
         android:layout_marginStart="24dp"
-        android:onClick="FindDoneClicked"
         android:text="Cancel"
+        android:onClick="OnCancelClicked"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/btnFindCancel"
+        android:id="@+id/btnFindDone"
         android:layout_width="145dp"
         android:layout_height="60dp"
         android:layout_marginBottom="140dp"
         android:layout_marginEnd="24dp"
         android:layout_marginStart="32dp"
-        android:onClick="OnCancelClicked"
+        android:onClick="FindDoneClicked"
         android:text="Done"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.727"
-        app:layout_constraintStart_toEndOf="@+id/btnVerfypw" />
+        app:layout_constraintStart_toEndOf="@+id/btnFindCancel" />
 
     <EditText
         android:id="@+id/edtNewPW"
@@ -44,7 +44,9 @@
         android:ems="10"
         android:hint="New Password"
         android:inputType="textPassword"
+        android:textSize="18dp"
         android:textColorHint="#A8AEB9"
+        android:textColor="@android:color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edtOldPW" />
@@ -59,7 +61,9 @@
         android:ems="10"
         android:hint="Old Password"
         android:inputType="textPassword"
+        android:textColor="@android:color/white"
         android:textColorHint="#A8AEB9"
+        android:textSize="18dp"
         app:layout_constraintEnd_toStartOf="@+id/btnFindConfirm"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -73,8 +77,10 @@
         android:layout_marginTop="28dp"
         android:ems="10"
         android:hint="Confirm Password"
+        android:textSize="18dp"
         android:inputType="text|textPassword"
         android:textColorHint="#A8AEB9"
+        android:textColor="@android:color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edtNewPW" />
@@ -86,6 +92,7 @@
         android:layout_marginEnd="20dp"
         android:layout_marginTop="130dp"
         android:text="Confirm"
+        android:onClick="OnVerifyClicked"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
