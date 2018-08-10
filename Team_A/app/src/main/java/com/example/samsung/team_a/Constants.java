@@ -32,4 +32,33 @@ public interface Constants {
     public static final String DEVICE_NAME = "device_name";
     public static final String TOAST = "toast";
 
+    //Sign Up
+    public static final int SU_SUCCESS = 1;
+    public static final int SU_DUPLICATED = 2;
+    public static final int SU_NONCE_EXIT = 3;
+
+    //Sign In
+    public static final int SI_SUCCESS = 1;
+    public static final int SI_NO_SUCH_EMAIL = 2;
+    public static final int SI_WRONG_PASSWORD = 3;
+    public static final int SI_NONCE_EXIST = 4;
+
+    //Password Change
+    public static final int PC_CORRECT_PASSWORD = 1;
+    public static final int PC_WRONG_PASSWORD = 2;
+    public static final int PC_NO_SUCH_ACCOUNT = 3;
+
+    //Reset Password
+    public static final int RP_EMAIL_EXIST = 1;
+    public static final int RP_EMAIL_NOT_EXIST = 2;
+
+    //Id cancellation
+    public static final int IC_EMAIL_EXIST = 1;
+    public static final int IC_EMAIL_NOT_EXIST = 2;
+    public static final int IC_NO_SUCH_ACCOUNT = 3;
+
+    //bluetooth connect first or not
+    public static final int BT_REGISTER = 1;
+    public static final int BT_USING = 2;
+
 }

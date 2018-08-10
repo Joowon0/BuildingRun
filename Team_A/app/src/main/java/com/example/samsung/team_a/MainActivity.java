@@ -1,7 +1,10 @@
 package com.example.samsung.team_a;
 
+import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -29,7 +32,16 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import static com.example.samsung.team_a.loginActivity.*;
 
@@ -44,6 +56,7 @@ public class MainActivity extends AppCompatActivity
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
     private SectionsPagerAdapter mSectionsPagerAdapter;
+    private HttpURLConnection conn;
 
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -109,7 +122,8 @@ public class MainActivity extends AppCompatActivity
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         TextView textID = (TextView)findViewById(R.id.textView34);
-        textID.setText(loginActivity.STuser_id);
+        textID.setText(loginActivity.ST_email);
+        Log.d("ST_email : ",loginActivity.ST_email);
         return true;
     }
 
@@ -121,13 +135,15 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            loginActivity.STuser_pass="";
-            loginActivity.STuser_id="";
+        /*if (id == R.id.action_settings) {
+            loginActivity.ST_email="";
+            loginActivity.ST_firstname="";
+            loginActivity.ST_lastname="";
+            loginActivity.ST_usn=0;
             Toast.makeText(getApplicationContext(),"Log out",Toast.LENGTH_SHORT).show();
             sHandler.sendEmptyMessageDelayed(0,1000);
             //return true;
-        }
+        }*/
 
         return super.onOptionsItemSelected(item);
     }
@@ -150,20 +166,27 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_Change_Password) {
             Intent i = new Intent(getApplicationContext(), Change_pwActivity.class);
             startActivity(i);
-        }  else if (id == R.id.nav_HeartRate) {
-            File apkFile = new File(Environment.getExternalStorageDirectory().getAbsoluteFile()+"/BlissMobile");
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setDataAndType(Uri.fromFile(apkFile), "application/vnd.android.package-archive");
-            startActivity(intent);
-        } else if (id == R.id.nav_My_sensor) {
-
-        } else if (id == R.id.nav_account_cancel) {
-
-        } else if (id == R.id.nav_logout) {
-            loginActivity.STuser_pass="";
-            loginActivity.STuser_id="";
-            Toast.makeText(getApplicationContext(),"Log out",Toast.LENGTH_SHORT).show();
-            sHandler.sendEmptyMessageDelayed(0,1000);
+        }  else if (id == R.id.nav_mysensor) {
+            Intent i = new Intent(getApplicationContext(), RegisterActivity.class);
+            startActivity(i);
+        } else if (id == R.id.nav_HeartRate) {
+            Intent i = new Intent(getApplicationContext(), HeartRateActivity.class);
+            startActivity(i);
+        }  else if (id == R.id.nav_account_cancel) {
+            Intent i = new Intent(getApplicationContext(), Id_CancellationActivity.class);
+            startActivity(i);
+        }else if(id == R.id.nav_Map){
+            Intent i = new Intent(getApplicationContext(), MapsActivity.class);
+            startActivity(i);
+        }else if (id == R.id.nav_logout) {
+            logoutBW logout = new logoutBW(this);
+            logout.execute();
+            loginActivity.ST_email="";
+            loginActivity.ST_firstname="";
+            loginActivity.ST_lastname="";
+            loginActivity.ST_usn=0;
+            //Toast.makeText(getApplicationContext(),"Log out",Toast.LENGTH_SHORT).show();
+            //sHandler.sendEmptyMessageDelayed(0,1000);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -217,9 +240,9 @@ public class MainActivity extends AppCompatActivity
                 case 1:
                     tab2HearRate tab2= new tab2HearRate();
                     return tab2;
-                case 2:
-                    tab3Map tab3= new tab3Map();
-                    return tab3;
+                /*case 2:
+                    frag_historic tab3= new frag_historic();
+                    return tab3;*/
                 default:
                     //return null;
                     return PlaceholderFragment.newInstance(position+1);
@@ -229,7 +252,7 @@ public class MainActivity extends AppCompatActivity
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 3;
+            return 2;
         }
 
         @Nullable
@@ -240,12 +263,114 @@ public class MainActivity extends AppCompatActivity
                     return "Air Quality";
                 case 1:
                     return "Heart Rate";
-                case 2:
-                    return "Map";
+                /*case 2:
+                    return "Map";*/
 
             }
             return null;
         }
     }
+    Handler rHandler = new Handler() {
+        public void handleMessage(Message msg) {
+            Intent i = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(i);
+        }
+    };
+    class logoutBW extends AsyncTask<String, Integer, Integer> {
+        Context context;
 
+        logoutBW(Context etx) {
+            context = etx;
+        }
+
+        protected void onPreExecute() {
+
+        }
+
+        @Override
+        protected Integer doInBackground(String... value) {
+            boolean result = signOut();
+            if(result){
+                publishProgress(1);
+            }
+            else {
+                publishProgress(2);
+            }
+            return null;
+        }
+
+        protected void onProgressUpdate(Integer... value) {
+            AlertDialog alertdialog = new AlertDialog.Builder(context).create();
+            if (value[0] == 1) {
+                Toast.makeText(MainActivity.this,"Log Out",Toast.LENGTH_SHORT).show();
+                sHandler.sendEmptyMessageDelayed(0, 10);
+            } else if (value[0] == 2) {
+                Toast.makeText(MainActivity.this,"Try again",Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        public boolean signOut() {
+            StringBuilder output = new StringBuilder();
+            InputStream is;
+            ByteArrayOutputStream baos;
+            boolean result = false;
+            try {
+                URL url = new URL("http://teama-iot.calit2.net/app/signout");
+                conn = (HttpURLConnection) url.openConnection();
+
+                JSONObject json = new JSONObject();
+                try {
+                    json.put("USN", ST_usn);
+
+                } catch (JSONException ex) {
+                    ex.printStackTrace();
+                }
+
+                String body = json.toString();
+                Log.d("JSON_body : ", body);
+                if (conn != null) {
+                    conn.setConnectTimeout(10000);
+                    conn.setRequestMethod("POST");
+                    conn.setDoInput(true);
+                    conn.setDoOutput(true);
+                    conn.setRequestProperty("Content-Type", "application/json");
+
+                    OutputStream os = conn.getOutputStream();
+                    os.write(body.getBytes());
+                    os.flush();
+                    String response;
+                    int responseCode = conn.getResponseCode();
+
+                    if (responseCode == HttpURLConnection.HTTP_OK) {
+                        is = conn.getInputStream();
+                        baos = new ByteArrayOutputStream();
+                        byte[] byteBuffer = new byte[1024];
+                        byte[] byteData = null;
+                        int nLength = 0;
+                        while ((nLength = is.read(byteBuffer, 0, byteBuffer.length)) != -1) {
+                            baos.write(byteBuffer, 0, nLength);
+                        }
+                        byteData = baos.toByteArray();
+                        response = new String(byteData);
+                        Log.d("response",response);
+                        JSONObject responseJSON = new JSONObject(response);
+                        result = (Boolean) responseJSON.get("ACK");
+
+                        is.close();
+                        os.close();
+                        conn.disconnect();
+                    }
+                } else {
+                    Log.d("JSON", "Connection fail");
+                }
+            } catch (MalformedURLException ex) {
+                ex.printStackTrace();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                Log.d("JSON_2line:", "problem");
+            }
+            return result;
+        }
+
+    }
 }

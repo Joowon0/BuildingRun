@@ -2,35 +2,38 @@ package com.example.samsung.team_a;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 
 public class newIdActivity extends AppCompatActivity {
-    Button btnNewId, btnLogin, btnVerify;
+    Button btnNewId, btnLogin;
     public static EditText edtEmail;
     EditText edtPass, edtPass2, edtPhone, edtFirstName, edtLastName;
-    public static boolean checkIdFlag = false;
     public static boolean joinFlag = false;
+    public boolean resultFlag = false;
+    private HttpURLConnection conn;
+    private SharedPreferences prf;
+    private SharedPreferences.Editor editor;
     String checkId;
     AlertDialog alertdialog;
 
@@ -42,7 +45,6 @@ public class newIdActivity extends AppCompatActivity {
 
         btnNewId = (Button) findViewById(R.id.btnNewID);
         btnLogin = (Button) findViewById(R.id.btnLogin);
-        btnVerify = (Button) findViewById(R.id.btnVerify);
         edtPass = (EditText) findViewById(R.id.edtPass);
         edtPass2 = (EditText) findViewById(R.id.edtPass2);
         edtEmail = (EditText) findViewById(R.id.edtEmail);
@@ -67,18 +69,14 @@ public class newIdActivity extends AppCompatActivity {
             alertdialog.setMessage("Enter the information.");
             alertdialog.show();
             return;
-        } else if (/*!edtEmail.getText().toString().equals(checkId) ||*/ !checkIdFlag) {
-            alertdialog.setTitle("Error");
-            alertdialog.setMessage("Check your E-mail. ");
-            alertdialog.show();
-            return;
         } else if (!edtPass.getText().toString().equals(edtPass2.getText().toString())) {
             alertdialog.setTitle("Error");
             alertdialog.setMessage("Check your password.");
             alertdialog.show();
             return;
-        } else{
-            joinFlag = true;
+        } else {
+            newIdBW newidBW = new newIdBW(this);
+            newidBW.execute();
         }
 
         String type = "newId";
@@ -89,8 +87,7 @@ public class newIdActivity extends AppCompatActivity {
         String Email = edtEmail.getText().toString();
         String Phone = edtPhone.getText().toString();
 
-        newIdBW newidBW = new newIdBW(this);
-        newidBW.execute(type, Email, Pass, FirstName, LastName, Phone);
+
         //aHandler.sendEmptyMessageDelayed(0, 1000);
 
     }
@@ -106,207 +103,127 @@ public class newIdActivity extends AppCompatActivity {
         }
     };
 
-    public void checkIdButtonClick(View v) {
-        if (edtEmail.getText().toString().equals("")) {
-            alertdialog.setTitle("Error");
-            alertdialog.setMessage("Input your E-mail");
-            alertdialog.show();
-            return;
-        } else {
-            checkId = edtEmail.getText().toString();
-            String type = "checkEmail";
+    class newIdBW extends AsyncTask<String, Integer, Integer> {
+        Context context;
 
-            checkIdBW checkBW = new checkIdBW(this);
-            checkBW.execute(type, checkId);
-
-            //checkIdFlag = true;
+        newIdBW(Context etx) {
+            context = etx;
         }
-    }
-}
 
-class checkIdBW extends AsyncTask<String, Void, String> {
-    String type = "";
-    Context context;
-    AlertDialog alertdialog;
+        protected void onPreExecute() {
 
-    checkIdBW(Context etx) {
-        context = etx;
-    }
+        }
 
-    public checkIdBW() {
-        // TODO Auto-generated constructor stub
-    }
-
-    @Override
-    protected String doInBackground(String... params) {
-        // TODO Auto-generated method stub
-        type = params[0];
-        String checkId_url = "http://" + FirstActivity.connectIP + "/checkEmail.php";
-        if (type.equals("checkEmail")) {
-            try {
-                String EmailAddress = params[1];
-
-                URL url = new URL(checkId_url);
-                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-                httpURLConnection.setRequestMethod("POST");
-                httpURLConnection.setDoOutput(true);
-                httpURLConnection.setDoInput(true);
-                OutputStream outputstream = httpURLConnection.getOutputStream();
-                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputstream, "UTF-8"));
-                String post_data = URLEncoder.encode("EmailAddress", "UTF-8") + "=" + URLEncoder.encode(EmailAddress, "UTF-8");
-                bufferedWriter.write(post_data);
-                bufferedWriter.flush();
-                bufferedWriter.close();
-                outputstream.close();
-                InputStream inputStream = httpURLConnection.getInputStream();
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
-                String result = "";
-                String line = "";
-
-                while ((line = bufferedReader.readLine()) != null) {
-                    result += line;
-                }
-                bufferedReader.close();
-                inputStream.close();
-                httpURLConnection.disconnect();
-                return result;
-            } catch (MalformedURLException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+        @Override
+        protected Integer doInBackground(String... value) {
+            int result = newid();
+            if(result == Constants.SU_SUCCESS){
+                publishProgress(1);
             }
-        }
-        return null;
-    }
-
-    @Override
-    protected void onPreExecute() {
-        // TODO Auto-generated method stub
-
-        alertdialog = new AlertDialog.Builder(context).create();
-        alertdialog.setTitle("Check E-mail");
-    }
-
-    @Override
-    protected void onPostExecute(String result) {
-        // TODO Auto-generated method stub
-        if (type.equals("checkEmail")) {
-
-            if(result.substring(1,2).equals("Y")){
-                Toast.makeText(context,"You can use your E-mail.",Toast.LENGTH_SHORT).show();
-                newIdActivity.checkIdFlag = true;
+            else if(result == Constants.SU_DUPLICATED){
+                publishProgress(2);
             }
             else{
-                Toast.makeText(context,"The Email is already registered. Please enter other email or sign-in.",Toast.LENGTH_SHORT).show();
-                //newIdActivity.checkIdFlag = true;
-                //newIdActivity.joinFlag = true;
+                publishProgress(3);
             }
-
+            Log.d("JSON result : ", String.valueOf(result));
+            return null;
         }
-    }
 
-    @Override
-    protected void onProgressUpdate(Void... values) {
-        // TODO Auto-generated method stub
-        super.onProgressUpdate(values);
-    }
-}
+        protected void onProgressUpdate(Integer... value) {
+            AlertDialog alertdialog = new AlertDialog.Builder(context).create();
 
-class newIdBW extends AsyncTask<String, Void, String> {
-    String type = "";
-    Context context;
-    AlertDialog alertdialog;
+            Log.d("value[0]: ", value[0].toString());
+            if (value[0]== Constants.SU_SUCCESS) {
+                alertdialog.setTitle("information");
+                alertdialog.setMessage("Sign Up Successfully.");
+                alertdialog.show();
+                sHandler.sendEmptyMessageDelayed(0, 2000);
+            } else if (value[0] ==Constants.SU_DUPLICATED){
+                alertdialog.setTitle("information");
+                alertdialog.setMessage("It is duplicated E-mail. Please check your E-mail.");
+                alertdialog.show();
+                edtEmail.setText("");
+                edtPass.setText("");
+                edtPass2.setText("");
+            }else{
+                alertdialog.setTitle("information");
+                alertdialog.setMessage("System Error");
+                alertdialog.show();
 
-    newIdBW(Context etx) {
-        context = etx;
-    }
+            }
+        }
 
-    public newIdBW() {
-        // TODO Auto-generated constructor stub
-    }
+        public int newid() {
+            StringBuilder output = new StringBuilder();
+            InputStream is;
+            ByteArrayOutputStream baos;
+            //String urlStr = prf.getString("IP", "");
+            int result = 0;
 
-    @Override
-    protected String doInBackground(String... params) {
-        // TODO Auto-generated method stub
-        type = params[0];
-        String newId_url = "http://" + FirstActivity.connectIP + "/newid.php";
-        if (type.equals("newId")) {
+
             try {
-                String EmailAddress = params[1];
-                String HPassword = params[2];
-                String FirstName = params[3];
-                String LastName = params[4];
-                String PhoneNum = params[5];
+                URL url = new URL("http://teama-iot.calit2.net/app/register");
+                conn = (HttpURLConnection) url.openConnection();
 
-                URL url = new URL(newId_url);
-                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-                httpURLConnection.setRequestMethod("POST");
-                httpURLConnection.setDoOutput(true);
-                httpURLConnection.setDoInput(true);
-                OutputStream outputstream = httpURLConnection.getOutputStream();
-                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputstream, "UTF-8"));
-                String post_data = URLEncoder.encode("EmailAddress", "UTF-8") + "=" + URLEncoder.encode(EmailAddress, "UTF-8")
-                        + "&" + URLEncoder.encode("HPassword", "UTF-8") + "=" + URLEncoder.encode(HPassword, "UTF-8")
-                        + "&" + URLEncoder.encode("FirstName", "UTF-8") + "=" + URLEncoder.encode(FirstName, "UTF-8")
-                        + "&" + URLEncoder.encode("LastName", "UTF-8") + "=" + URLEncoder.encode(LastName, "UTF-8")
-                        + "&" + URLEncoder.encode("PhoneNum", "UTF-8") + "=" + URLEncoder.encode(PhoneNum, "UTF-8");
-                bufferedWriter.write(post_data);
-                bufferedWriter.flush();
-                bufferedWriter.close();
-                outputstream.close();
-                InputStream inputStream = httpURLConnection.getInputStream();
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
-                String result = "";
-                String line = "";
+                JSONObject json = new JSONObject();
+                try {
+                    json.put("email", edtEmail.getText().toString());
+                    json.put("firstName", edtFirstName.getText().toString());
+                    json.put("lastName", edtLastName.getText().toString());
+                    json.put("password", edtPass.getText().toString());
+                    json.put("phoneNum", edtPhone.getText().toString());
 
-                while ((line = bufferedReader.readLine()) != null) {
-                    result += line;
+                } catch (JSONException ex) {
+                    ex.printStackTrace();
                 }
-                bufferedReader.close();
-                inputStream.close();
-                httpURLConnection.disconnect();
-                return result;
-            } catch (MalformedURLException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+
+                String body = json.toString();
+                Log.d("JSON_body : ", body);
+                if (conn != null) {
+                    conn.setConnectTimeout(10000);
+                    conn.setRequestMethod("POST");
+                    conn.setDoInput(true);
+                    conn.setDoOutput(true);
+                    conn.setRequestProperty("Content-Type", "application/json");
+
+                    OutputStream os = conn.getOutputStream();
+                    os.write(body.getBytes());
+                    os.flush();
+                    String response;
+                    int responseCode = conn.getResponseCode();
+
+                    Log.d("JSONresponseconnection", String.valueOf(responseCode));
+
+                    if (responseCode == HttpURLConnection.HTTP_OK) {
+                        is = conn.getInputStream();
+                        baos = new ByteArrayOutputStream();
+                        byte[] byteBuffer = new byte[1024];
+                        byte[] byteData = null;
+                        int nLength = 0;
+                        while ((nLength = is.read(byteBuffer, 0, byteBuffer.length)) != -1) {
+                            baos.write(byteBuffer, 0, nLength);
+                        }
+                        byteData = baos.toByteArray();
+                        response = new String(byteData);
+                        JSONObject responseJSON = new JSONObject(response);
+                        result = (Integer) responseJSON.get("Result");
+
+                        is.close();
+                        os.close();
+                        conn.disconnect();
+                    }
+                } else {
+                    Log.d("JSON", "Connection fail");
+                }
+            } catch (MalformedURLException ex) {
+                ex.printStackTrace();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                Log.d("JSON_2line:", "problem");
             }
+            return result;
         }
-        return null;
-    }
-
-    @Override
-    protected void onPreExecute() {
-        // TODO Auto-generated method stub
-
-        alertdialog = new AlertDialog.Builder(context).create();
-        alertdialog.setTitle("Message");
-    }
-    Handler sHandler = new Handler();
-    @Override
-    protected void onPostExecute(String result) {
-        // TODO Auto-generated method stub
-        if (type.equals("newId")) {
-            if (newIdActivity.joinFlag) {
-                alertdialog.setTitle("Sign UP");
-                alertdialog.setMessage("Sign up Successfully");
-                sHandler.sendEmptyMessageDelayed(0, 1000);
-                Intent i = new Intent(context, loginActivity.class);
-                context.startActivity(i);
-            } else {
-                alertdialog.setTitle("failed");
-                alertdialog.setMessage("Check your information");
-            }
-        }
-    }
-
-    @Override
-    protected void onProgressUpdate(Void... values) {
-        // TODO Auto-generated method stub
-        super.onProgressUpdate(values);
     }
 }
+

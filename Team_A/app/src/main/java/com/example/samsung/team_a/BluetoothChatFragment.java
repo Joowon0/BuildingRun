@@ -20,13 +20,16 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -41,6 +44,20 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * This fragment controls Bluetooth to communicate with other devices.
  */
@@ -81,18 +98,19 @@ public class BluetoothChatFragment extends Fragment {
     /**
      * Member object for the chat services
      */
-    private BluetoothChatService mChatService = null;
+    private BluetoothChatService mChatService = null; // 존나필요
     public static String AirQuality;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
         // Get local Bluetooth adapter
-            mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         // If the adapter is null, then Bluetooth is not supported
-        if (mBluetoothAdapter == null) {
+        if (mBluetoothAdapter == null) {                    //필요 없음
             FragmentActivity activity = getActivity();
             Toast.makeText(activity, "Bluetooth is not available", Toast.LENGTH_LONG).show();
             activity.finish();
@@ -101,7 +119,7 @@ public class BluetoothChatFragment extends Fragment {
 
 
     @Override
-    public void onStart() {
+    public void onStart() { //넣고
         super.onStart();
         // If BT is not on, request that it be enabled.
         // setupChat() will then be called during onActivityResult
@@ -115,7 +133,7 @@ public class BluetoothChatFragment extends Fragment {
     }
 
     @Override
-    public void onDestroy() {
+    public void onDestroy() {//넣고
         super.onDestroy();
         if (mChatService != null) {
             mChatService.stop();
@@ -123,7 +141,7 @@ public class BluetoothChatFragment extends Fragment {
     }
 
     @Override
-    public void onResume() {
+    public void onResume() {//넣고
         super.onResume();
         // Performing this check in onResume() covers the case in which BT was
         // not enabled during onStart(), so we were paused to enable it...
@@ -138,22 +156,23 @@ public class BluetoothChatFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,//빼고
                              @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_bluetooth_chat, container, false);
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {//뺘ㅐ고
         mConversationView = (ListView) view.findViewById(R.id.in);
         mOutEditText = (EditText) view.findViewById(R.id.edit_text_out);
         mSendButton = (Button) view.findViewById(R.id.button_send);
     }
 
+
     /**
      * Set up the UI and background operations for chat.
      */
-    private void setupChat() {
+    private void setupChat() {//빼고
         // Initialize the array adapter for the conversation thread
         mConversationArrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.message);
 
@@ -176,7 +195,7 @@ public class BluetoothChatFragment extends Fragment {
         });
 
         // Initialize the BluetoothChatService to perform bluetooth connections
-        mChatService = new BluetoothChatService(getActivity(), mHandler);
+        mChatService = new BluetoothChatService(getActivity(), mHandler); //oncreate에 넣기
         // Initialize the buffer for outgoing messages
         mOutStringBuffer = new StringBuffer("");
     }
@@ -184,7 +203,7 @@ public class BluetoothChatFragment extends Fragment {
     /**
      * Makes this device discoverable for 300 seconds (5 minutes).
      */
-    private void ensureDiscoverable() {
+    private void ensureDiscoverable() { //넣어
         if (mBluetoothAdapter.getScanMode() !=
                 BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
             Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
@@ -198,7 +217,7 @@ public class BluetoothChatFragment extends Fragment {
      *
      * @param message A string of text to send.
      */
-    private void sendMessage(String message) {
+    private void sendMessage(String message) {//넣어
         // Check that we're actually connected before trying anything
         if (mChatService.getState() != BluetoothChatService.STATE_CONNECTED) {
             Toast.makeText(getActivity(), R.string.not_connected, Toast.LENGTH_SHORT).show();
@@ -221,7 +240,7 @@ public class BluetoothChatFragment extends Fragment {
      * The action listener for the EditText widget, to listen for the return key
      */
     private TextView.OnEditorActionListener mWriteListener
-            = new TextView.OnEditorActionListener() {
+            = new TextView.OnEditorActionListener() {//버려
         public boolean onEditorAction(TextView view, int actionId, KeyEvent event) {
             // If the action is a key-up event on the return key, send the message
             if (actionId == EditorInfo.IME_NULL && event.getAction() == KeyEvent.ACTION_UP) {
@@ -237,7 +256,7 @@ public class BluetoothChatFragment extends Fragment {
      *
      * @param resId a string resource ID
      */
-    private void setStatus(int resId) {
+    private void setStatus(int resId) {//버려
         FragmentActivity activity = getActivity();
         if (null == activity) {
             return;
@@ -254,7 +273,7 @@ public class BluetoothChatFragment extends Fragment {
      *
      * @param subTitle status
      */
-    private void setStatus(CharSequence subTitle) {
+    private void setStatus(CharSequence subTitle) {//버려
         FragmentActivity activity = getActivity();
         if (null == activity) {
             return;
@@ -271,7 +290,7 @@ public class BluetoothChatFragment extends Fragment {
      */
     private final Handler mHandler = new Handler() {
         @Override
-        public void handleMessage(Message msg) {
+        public void handleMessage(Message msg) {//넣고
             FragmentActivity activity = getActivity();
             switch (msg.what) {
                 case Constants.MESSAGE_STATE_CHANGE:
@@ -320,7 +339,7 @@ public class BluetoothChatFragment extends Fragment {
         }
     };
 
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {//넣어
         switch (requestCode) {
             case REQUEST_CONNECT_DEVICE_SECURE:
                 // When DeviceListActivity returns with a device to connect
@@ -354,7 +373,7 @@ public class BluetoothChatFragment extends Fragment {
      * @param data   An {@link Intent} with {@link DeviceListActivity#EXTRA_DEVICE_ADDRESS} extra.
      * @param secure Socket Security type - Secure (true) , Insecure (false)
      */
-    private void connectDevice(Intent data, boolean secure) {
+    private void connectDevice(Intent data, boolean secure) {//넣고
         // Get the device MAC address
         String address = data.getExtras()
                 .getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
@@ -366,7 +385,7 @@ public class BluetoothChatFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.bluetooth_chat, menu);
+        inflater.inflate(R.menu.bluetooth_chat, menu); //넣고
     }
 
     @Override
@@ -374,7 +393,7 @@ public class BluetoothChatFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.secure_connect_scan: {
                 // Launch the DeviceListActivity to see devices and do scan
-                Intent serverIntent = new Intent(getActivity(), DeviceListActivity.class);
+                Intent serverIntent = new Intent(getActivity(), DeviceListActivity.class);//넣고
                 startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_SECURE);
                 return true;
             }

@@ -3,16 +3,23 @@ package com.example.samsung.team_a;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -31,23 +38,32 @@ public class Change_pwActivity extends AppCompatActivity {
     public EditText edtNewPW, edtOldPW, edtNewPW2;
     public static String oldPW = "";
     public static boolean checkpwFlag = false;
+    private HttpURLConnection conn;
     AlertDialog alertdialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_change_pw);
-        btnFindCancel = (Button) findViewById(R.id.btnFindCancel);
+        btnFindCancel = (Button) findViewById(R.id.btnverify);
         btnFindConfirm = (Button) findViewById(R.id.btnFindConfirm);
         btnFindDone = (Button) findViewById(R.id.btnFindDone);
         edtOldPW = (EditText) findViewById(R.id.edtOldPW);
         edtNewPW = (EditText) findViewById(R.id.edtNewPW);
         edtNewPW2 = (EditText) findViewById(R.id.edtNewPW2);
+        Log.d("changepw on create USN",String.valueOf(loginActivity.ST_usn));
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        checkpwFlag = false;
     }
 
     public void OnCancelClicked(View v) {
         Intent i = new Intent(Change_pwActivity.this, MainActivity.class);
         startActivityForResult(i, REQUEST_CODE_MENU);
+        checkpwFlag = false;
     }
 
     public void FindDoneClicked(View v) {
@@ -59,12 +75,11 @@ public class Change_pwActivity extends AppCompatActivity {
         } else {
             if (checkpwFlag) {
                 updatePassBW updatepassBW = new updatePassBW(this);
-                updatepassBW.execute("updatePass", loginActivity.STuser_id, edtNewPW.getText().toString());
+                updatepassBW.execute();
                 edtOldPW.setText("");
                 edtNewPW.setText("");
                 edtNewPW2.setText("");
-            }
-            else{
+            } else {
                 alertdialog = new AlertDialog.Builder(this).create();
                 alertdialog.setTitle("information");
                 alertdialog.setMessage("Confirm First.");
@@ -75,198 +90,249 @@ public class Change_pwActivity extends AppCompatActivity {
 
     public void OnVerifyClicked(View v) {
 
-        oldPW = edtOldPW.getText().toString();
-        if (oldPW.equals(loginActivity.STuser_pass)) {
-            Toast.makeText(getApplicationContext(), "Verified", Toast.LENGTH_SHORT).show();
-            Change_pwActivity.checkpwFlag = true;
+        checkpwBW checkBW = new checkpwBW(this);
+        checkBW.execute();
+
+    }
+
+    Handler mHandler = new Handler() {
+        public void handleMessage(Message msg) {
+            Intent i = new Intent(Change_pwActivity.this, MainActivity.class);
+            startActivityForResult(i, REQUEST_CODE_MENU);
         }
-        //checkpwBW checkBW= new checkpwBW(this);
-        //checkBW.execute("checkpw",loginActivity.STuser_id);
-        else {
-            Toast.makeText(getApplicationContext(), "Check your password", Toast.LENGTH_SHORT).show();
-            edtOldPW.setText("");
+    };
+
+    class checkpwBW extends AsyncTask<String, Integer, Integer> {
+        Context context;
+
+        checkpwBW(Context etx) {
+            context = etx;
         }
 
-    }
-}
+        protected void onPreExecute() {
 
-class updatePassBW extends AsyncTask<String, Void, String> {
-    String type = "";
-    Context context;
-    AlertDialog alertdialog;
+        }
 
-    updatePassBW(Context etx) {
-        context = etx;
-    }
+        @Override
+        protected Integer doInBackground(String... value) {
+            int result = checkpw();
+            if (result == Constants.PC_CORRECT_PASSWORD) {
+                publishProgress(1);
+                checkpwFlag = true;
 
-    public updatePassBW() {
-        // TODO Auto-generated constructor stub
-    }
-
-    @Override
-    protected String doInBackground(String... params) {
-        // TODO Auto-generated method stub
-        type = params[0];
-        String postState_url = "";
-        if (type.equals("updatePass")) {
-            try {
-                String user_id = params[1];
-                String new_pass = params[2];
-
-                URL url = new URL(postState_url);
-                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-                httpURLConnection.setRequestMethod("POST");
-                httpURLConnection.setDoOutput(true);
-                httpURLConnection.setDoInput(true);
-                OutputStream outputstream = httpURLConnection.getOutputStream();
-                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputstream, "UTF-8"));
-                String post_data = URLEncoder.encode("EmailAddress", "UTF-8") + "=" + URLEncoder.encode(user_id, "UTF-8")
-                        + "&" + URLEncoder.encode("HPassword", "UTF-8") + "=" + URLEncoder.encode(new_pass, "UTF-8");
-                bufferedWriter.write(post_data);
-                bufferedWriter.flush();
-                bufferedWriter.close();
-                outputstream.close();
-                InputStream inputStream = httpURLConnection.getInputStream();
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
-                String result = "";
-                String line = "";
-
-                while ((line = bufferedReader.readLine()) != null) {
-                    result += line;
-                }
-                bufferedReader.close();
-                inputStream.close();
-                httpURLConnection.disconnect();
-                return result;
-            } catch (MalformedURLException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+            } else {
+                publishProgress(2);
+                edtOldPW.setText("");
             }
+
+            Log.d("JSON result : ", String.valueOf(result));
+            return null;
         }
-        return null;
-    }
 
-    @Override
-    protected void onPreExecute() {
-        // TODO Auto-generated method stub
-
-        alertdialog = new AlertDialog.Builder(context).create();
-        alertdialog.setTitle("information");
-    }
-
-    @Override
-    protected void onPostExecute(String result) {
-        // TODO Auto-generated method stub
-        if (type.equals("updatePass")) {
-            if (result.charAt(1) == '0' || result.substring(1, 2).equals("0")) {
-                alertdialog.setMessage("Please check your password");
+        protected void onProgressUpdate(Integer... value) {
+            AlertDialog alertdialog = new AlertDialog.Builder(context).create();
+            if (value[0] == Constants.PC_CORRECT_PASSWORD) {
+                alertdialog.setTitle("information");
+                alertdialog.setMessage("Correct password. Please input your new password.");
                 alertdialog.show();
             } else {
-                alertdialog.setMessage("Password change success.");
+                alertdialog.setTitle("information");
+                alertdialog.setMessage("Wrong password. Check your password.");
                 alertdialog.show();
-                Intent i = new Intent(context, MainActivity.class);
-                context.startActivity(i);
             }
         }
+
+        public int checkpw() {
+            StringBuilder output = new StringBuilder();
+            InputStream is;
+            ByteArrayOutputStream baos;
+            int result = 0;
+
+            try {
+                URL url = new URL("http://teama-iot.calit2.net/app/checkCurrentPW");
+                conn = (HttpURLConnection) url.openConnection();
+
+                JSONObject json = new JSONObject();
+                try {
+                    Log.d("loginActivity.ST_usn",String.valueOf(loginActivity.ST_usn));
+
+                    json.put("USN", loginActivity.ST_usn);
+                    json.put("password", edtOldPW.getText().toString());
+
+
+                    Log.d("ST_USN in Change pw",Integer.valueOf(loginActivity.ST_usn).toString());
+                } catch (JSONException ex) {
+                    ex.printStackTrace();
+                }
+
+                String body = json.toString();
+                Log.d("JSON_body : ", body);
+                if (conn != null) {
+                    conn.setConnectTimeout(10000);
+                    conn.setRequestMethod("POST");
+                    conn.setDoInput(true);
+                    conn.setDoOutput(true);
+                    conn.setRequestProperty("Content-Type", "application/json");
+
+                    OutputStream os = conn.getOutputStream();
+                    os.write(body.getBytes());
+                    os.flush();
+                    Log.d("JSONos.flush : ", "Success");
+                    String response;
+                    int responseCode = conn.getResponseCode();
+
+                    Log.d("JSONresponseconnection", String.valueOf(responseCode));
+
+                    if (responseCode == HttpURLConnection.HTTP_OK) {
+                        is = conn.getInputStream();
+                        baos = new ByteArrayOutputStream();
+                        byte[] byteBuffer = new byte[1024];
+                        byte[] byteData = null;
+                        int nLength = 0;
+                        while ((nLength = is.read(byteBuffer, 0, byteBuffer.length)) != -1) {
+                            baos.write(byteBuffer, 0, nLength);
+                        }
+                        byteData = baos.toByteArray();
+                        Log.d("JSONTEST/byteData : ", byteData.toString());
+                        response = new String(byteData);
+                        Log.d("JSONTEST/response : ", response);
+                        JSONObject responseJSON = new JSONObject(response);
+                        Log.d("JSONTEST/responseJSON : ", responseJSON.toString());
+                        result = (Integer) responseJSON.get("Result");
+                        Log.d("JSONTEST/result : ", String.valueOf(result));
+
+                        is.close();
+                        os.close();
+                        conn.disconnect();
+                    }
+                } else {
+                    Log.d("JSON", "Connection fail");
+                }
+            } catch (MalformedURLException ex) {
+                ex.printStackTrace();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                Log.d("JSON_2line:", "problem");
+            }
+            return result;
+        }
+
     }
 
-    @Override
-    protected void onProgressUpdate(Void... values) {
-        // TODO Auto-generated method stub
-        super.onProgressUpdate(values);
+    class updatePassBW extends AsyncTask<String, Integer, Integer> {
+        Context context;
+
+        updatePassBW(Context etx) {
+            context = etx;
+        }
+
+        protected void onPreExecute() {
+
+        }
+
+        @Override
+        protected Integer doInBackground(String... value) {
+            boolean result = updatePW();
+
+            if (result) {
+                publishProgress(1);
+            } else {
+                publishProgress(2);
+                edtNewPW.setText("");
+                edtNewPW2.setText("");
+            }
+
+            Log.d("JSON result : ", String.valueOf(result));
+            return null;
+        }
+
+        protected void onProgressUpdate(Integer... value) {
+            AlertDialog alertdialog = new AlertDialog.Builder(context).create();
+            if (value[0] == 1) {
+                alertdialog.setTitle("information");
+                alertdialog.setMessage("Password Change Success");
+                alertdialog.show();
+                mHandler.sendEmptyMessageDelayed(0, 2000);
+            } else {
+                alertdialog.setTitle("information");
+                alertdialog.setMessage("failed. Try again");
+                alertdialog.show();
+            }
+        }
+
+        public boolean updatePW() {
+            StringBuilder output = new StringBuilder();
+            InputStream is;
+            ByteArrayOutputStream baos;
+            boolean result = false;
+
+            try {
+                URL url = new URL("http://teama-iot.calit2.net/app/setNewPW");
+                conn = (HttpURLConnection) url.openConnection();
+
+                JSONObject json = new JSONObject();
+                try {
+                    json.put("USN", loginActivity.ST_usn);
+                    json.put("password", edtNewPW.getText().toString());
+
+                } catch (JSONException ex) {
+                    ex.printStackTrace();
+                }
+
+                String body = json.toString();
+                Log.d("JSON_body : ", body);
+                if (conn != null) {
+                    conn.setConnectTimeout(10000);
+                    conn.setRequestMethod("POST");
+                    conn.setDoInput(true);
+                    conn.setDoOutput(true);
+                    conn.setRequestProperty("Content-Type", "application/json");
+
+                    OutputStream os = conn.getOutputStream();
+                    os.write(body.getBytes());
+                    os.flush();
+                    Log.d("JSONos.flush : ", "Success");
+                    String response;
+                    int responseCode = conn.getResponseCode();
+
+                    Log.d("JSONresponseconnection", String.valueOf(responseCode));
+
+                    if (responseCode == HttpURLConnection.HTTP_OK) {
+                        is = conn.getInputStream();
+                        baos = new ByteArrayOutputStream();
+                        byte[] byteBuffer = new byte[1024];
+                        byte[] byteData = null;
+                        int nLength = 0;
+                        while ((nLength = is.read(byteBuffer, 0, byteBuffer.length)) != -1) {
+                            baos.write(byteBuffer, 0, nLength);
+                        }
+                        byteData = baos.toByteArray();
+                        Log.d("JSONTEST/byteData : ", byteData.toString());
+                        response = new String(byteData);
+                        Log.d("JSONTEST/response : ", response);
+                        JSONObject responseJSON = new JSONObject(response);
+                        Log.d("JSONTEST/responseJSON : ", responseJSON.toString());
+                        result = (boolean) responseJSON.get("ACK");
+                        Log.d("JSONTEST/result : ", String.valueOf(result));
+
+                        is.close();
+                        os.close();
+                        conn.disconnect();
+                    }
+                } else {
+                    Log.d("JSON", "Connection fail");
+                }
+            } catch (MalformedURLException ex) {
+                ex.printStackTrace();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                Log.d("JSON_2line:", "problem");
+            }
+            return result;
+        }
+
     }
 }
 
-/*class checkpwBW extends AsyncTask<String, Void, String> {
-    String type = "";
-    Context context;
-    AlertDialog alertdialog;
-    checkpwBW(Context etx){
-        context =etx;
-    }
 
-    public checkpwBW() {
-        // TODO Auto-generated constructor stub
-    }
 
-    @Override
-    protected String doInBackground(String... params) {
-        // TODO Auto-generated method stub
-        type=params[0];
-        String postState_url="http://"+FirstActivity.connectIP+"/change_checkPW.php";
-        if(type.equals("checkpw")){
-            try {
-                loginActivity.STuser_id = params[1];
-
-                URL url=new URL(postState_url);
-                HttpURLConnection httpURLConnection=(HttpURLConnection)url.openConnection();
-                httpURLConnection.setRequestMethod("POST");
-                httpURLConnection.setDoOutput(true);
-                httpURLConnection.setDoInput(true);
-                OutputStream outputstream=httpURLConnection.getOutputStream();
-                BufferedWriter bufferedWriter =new BufferedWriter(new OutputStreamWriter(outputstream,"UTF-8"));
-                String post_data = URLEncoder.encode("EmailAddress","UTF-8")+"="+ URLEncoder.encode(loginActivity.STuser_id,"UTF-8");
-                bufferedWriter.write(post_data);
-                bufferedWriter.flush();
-                bufferedWriter.close();
-                outputstream.close();
-                InputStream inputStream=httpURLConnection.getInputStream();
-                BufferedReader bufferedReader=new BufferedReader(new InputStreamReader(inputStream,"UTF-8"));
-                String result="";
-                String line="";
-
-                while((line=bufferedReader.readLine())!=null){
-                    result+=line;
-                }
-                bufferedReader.close();
-                inputStream.close();
-                httpURLConnection.disconnect();
-                return result;
-            } catch (MalformedURLException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-        return null;
-    }
-
-    @Override
-    protected void onPreExecute() {
-        // TODO Auto-generated method stub
-
-        alertdialog= new AlertDialog.Builder(context).create();
-        alertdialog.setTitle("information");
-    }
-
-    @Override
-    protected void onPostExecute(String result) {
-        // TODO Auto-generated method stub
-        if(type.equals("checkpw"))
-        {
-            if(result.equals(Change_pwActivity.oldPW))
-            {
-                alertdialog.setMessage("Verified");
-                alertdialog.show();
-                Change_pwActivity.checkpwFlag = true;
-
-            }
-            else
-            {
-                alertdialog.setMessage("Please Check your password.");
-                alertdialog.show();
-            }
-        }
-    }
-
-    @Override
-    protected void onProgressUpdate(Void... values) {
-        // TODO Auto-generated method stub
-        super.onProgressUpdate(values);
-    }
-}*/

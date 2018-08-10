@@ -32,15 +32,6 @@
             android:textColor="@android:color/white"
             android:textColorHint="#A8AEB9" />
 
-        <Button
-            android:id="@+id/btnVerify"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:onClick="checkIdButtonClick"
-            android:scaleType="centerInside"
-            android:text="Confirm" />
-
     </LinearLayout>
 
     <LinearLayout

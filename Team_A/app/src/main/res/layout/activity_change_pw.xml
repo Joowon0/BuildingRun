@@ -8,7 +8,7 @@
     tools:context=".Change_pwActivity">
 
     <Button
-        android:id="@+id/btnFindCancel"
+        android:id="@+id/btnverify"
         android:layout_width="145dp"
         android:layout_height="60dp"
         android:layout_marginBottom="140dp"
@@ -30,7 +30,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.727"
-        app:layout_constraintStart_toEndOf="@+id/btnFindCancel" />
+        app:layout_constraintStart_toEndOf="@+id/btnverify" />
 
     <EditText
         android:id="@+id/edtNewPW"

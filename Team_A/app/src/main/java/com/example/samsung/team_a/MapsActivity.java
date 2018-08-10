@@ -1,6 +1,11 @@
 package com.example.samsung.team_a;
 
 import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -33,11 +38,17 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.SimpleAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -63,6 +74,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -74,23 +87,46 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.sql.Time;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
 
 /**
  * An activity that displays a map showing the place at the device's current location.
  */
 public class MapsActivity extends FragmentActivity
         implements GoogleApiClient.OnConnectionFailedListener, OnMapReadyCallback, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener {
-
+    public static boolean mapback =false;
+    Context context;
+    //bluetooth from heartrate
+    private int MAX_SIZE = 60; //graph max size
+    boolean searchBt = true;
+    BluetoothAdapter mBluetoothAdapter;
+    List<BluetoothDevice> pairedDevices = new ArrayList<>();
+    boolean menuBool = false; //display or not the disconnect option
+    boolean h7 = false; //Was the BTLE tested
+    boolean normal = false; //Was the BT tested
+    private Spinner spinner1;
+    //
     private static final String TAG = MapsActivity.class.getSimpleName();
     private GoogleMap mMap;
     private PlaceInfo mPlace;
     private CameraPosition mCameraPosition;
+    private HttpURLConnection conn;
     Marker selectedMarker;
     View marker_root_view;
     TextView tv_marker;
@@ -98,10 +134,10 @@ public class MapsActivity extends FragmentActivity
     // The entry points to the Places API.
     private GeoDataClient mGeoDataClient;
     private PlaceDetectionClient mPlaceDetectionClient;
-    private String MAC = "";
-    private Date today;
+    public static String MAC = "";
+    private String time="";
     private int testDate = 0;
-    private double temp = 0.0, NO2 = 0.0, O3 = 0.0, CO = 0.0, SO2 = 0.0, PM25 = 0.0;
+    public static double CO = 0.0, NO2 = 0.0, temperature = 0.0, O3 = 0.0, SO2 = 0.0, PM25;
     // The entry point to the Fused Location Provider.
     private FusedLocationProviderClient mFusedLocationProviderClient;
 
@@ -114,7 +150,7 @@ public class MapsActivity extends FragmentActivity
     private PlaceAutocompleteAdapter mPlaceAutocompleteAdapter;
     // The geographical location where the device is currently located. That is, the last-known
     // location retrieved by the Fused Location Provider.
-    private Location mLastKnownLocation;
+    public static Location mLastKnownLocation;
     private GoogleApiClient mGoogleApiClient;
     // Keys for storing activity state.
     private static final String KEY_CAMERA_POSITION = "camera_position";
@@ -127,14 +163,49 @@ public class MapsActivity extends FragmentActivity
     private String[] mLikelyPlaceAddresses;
     private String[] mLikelyPlaceAttributions;
     private LatLng[] mLikelyPlaceLatLngs;
-
     //widgets
     private AutoCompleteTextView mSearchText;
+    private ImageView mInfo;
+    public static boolean TestFlag = false;
+    private BluetoothAdapter bt_adapter = null;
+    private BluetoothConnection bt_connection;
+    private BluetoothDevice bt_device;
+    private static final int REQUEST_CONNECT_DEVICE_SECURE = 1;
+    private static final int REQUEST_ENABLE_BT = 3;
+    Intent main_to_devicelist;
+    Frag_realtime fr=new Frag_realtime();
+    private String Realtime;
+
+    Handler sHandler = new Handler() {
+        public void handleMessage(Message msg) {
+            getandgodb();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mSearchText = (AutoCompleteTextView) findViewById(R.id.input_search);
+        mInfo = (ImageView) findViewById(R.id.place_info);
+        bt_adapter = BluetoothAdapter.getDefaultAdapter();
+
+        BluetoothConnection.state =2;
+        // DeviceListActivity로 정보 보내주려고 Intent 생성
+        main_to_devicelist = new Intent(MapsActivity.this, DeviceListActivity.class);
+
+        // If the adapter is null, then Bluetooth is not supported
+        if (!bt_adapter.isEnabled()) {
+            Intent bt_enable = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(bt_enable, REQUEST_ENABLE_BT);
+        }
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fr_case, new Frag_realtime())
+                .commit();
+        BluetoothConnection.state = 2;
+        startActivityForResult(main_to_devicelist, REQUEST_CONNECT_DEVICE_SECURE);
+
+
         // Retrieve location and camera position from saved instance state.
         if (savedInstanceState != null) {
             mLastKnownLocation = savedInstanceState.getParcelable(KEY_LOCATION);
@@ -158,14 +229,84 @@ public class MapsActivity extends FragmentActivity
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         contactList = new ArrayList<>();
+        //while(true){
+        //sHandler.sendEmptyMessageDelayed(0, 3000);
+        //}
+    }
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == Activity.RESULT_OK) {
+            ConnectDevice(data, true);
+        }
+    }
+
+    private void ConnectDevice(Intent data, boolean secure) {
+        // Get the device MAC address
+        String address = data.getExtras().getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
+
+        // Get the BluetoothDevice object
+
+            bt_device = bt_adapter.getRemoteDevice(address);
+            // Attempt to connect to the device
+            bt_connection = new BluetoothConnection(bt_device, bt_adapter, bt_receivemsg);
+            bt_connection.start();
+            MAC = bt_device.getAddress().toString();
+            Toast.makeText(MapsActivity.this, "CONNECTED WITH " + bt_device.getAddress() + " " + bt_device.getName(), Toast.LENGTH_SHORT).show();
+            BluetoothConnection.checkconnect = 1;
 
     }
+
+    private Handler bt_receivemsg = new Handler() { // ★ 메세지
+        @Override
+        public void handleMessage(Message message) {
+            Bundle data = message.getData();
+            Realtime = data.getString("realtime");
+            try {
+                JSONArray jsonarray = new JSONArray(Realtime);
+                for (int i = 0; i < jsonarray.length(); i++) {
+                    JSONObject jsondata = jsonarray.getJSONObject(i);
+                    MAC = (String) jsondata.getString("MAC");
+                    time = (String) jsondata.getString("TIME");
+                    NO2 = (Double) jsondata.getDouble("NO2");
+                    O3 = (Double) jsondata.getDouble("O3");
+                    CO = (Double) jsondata.getDouble("CO");
+                    SO2 = (Double) jsondata.getDouble("SO2");
+                    PM25 = (Double) jsondata.getDouble("PM25");
+                    temperature = (Double) jsondata.getDouble("TEMP");
+                    String result = "connecting..";
+                    Log.d("result",String.valueOf(NO2));
+                    Log.d("result",String.valueOf(O3));
+                    Log.d("result",String.valueOf(CO));
+                    Log.d("result",String.valueOf(SO2));
+                    Log.d("result",String.valueOf(PM25));
+                    Log.d("result",String.valueOf(temperature));
+                    fr.settxt(CO,NO2,O3,SO2,temperature,PM25,result);
+                    Toast.makeText(getApplicationContext(),"MAC : "+MAC+" time : "+time+" NO2 : "+NO2+" O3 : "+O3
+                            +" CO : "+CO+" SO2 : "+SO2+" PM25 : "+PM25+" temperature : "+temperature,Toast.LENGTH_SHORT).show();
+                }
+            } catch (JSONException e) {
+
+            }
+        }
+    };
+    public void MapInfoOnclick(View v) {
+        Toast.makeText(MapsActivity.this, "If you want real time data of " +
+                "your sensor, Click bluetooth icon and connect with your sensor.", Toast.LENGTH_LONG).show();
+
+    }
+
+    public void bluetoothconnect(View v) {
+        // Launch the DeviceListActivity to see devices and do scan
+        BluetoothConnection.state = 2;
+        startActivityForResult(main_to_devicelist, REQUEST_CONNECT_DEVICE_SECURE);
+
+    }
+
+
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
     }
-
     private void init() {
         Log.d(TAG, "init : initializing");
 
@@ -196,6 +337,15 @@ public class MapsActivity extends FragmentActivity
                 return false;
             }
         });
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        mapback = true;
+        Log.d("back button","click");
+
     }
 
     private void geoLocate() {
@@ -262,7 +412,7 @@ public class MapsActivity extends FragmentActivity
     public void onMapReady(GoogleMap map) {
         mMap = map;
         mSearchText = (AutoCompleteTextView) findViewById(R.id.input_search);
-
+        //mMap.setOnMarkerClickListener(this);
         // Use a custom info window adapter to handle multiple lines of text in the
         // info window contents.
         mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
@@ -281,7 +431,13 @@ public class MapsActivity extends FragmentActivity
 
                 TextView title = ((TextView) infoWindow.findViewById(R.id.title));
                 title.setText(marker.getTitle());
-
+                title.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent i = new Intent(getApplicationContext(), tab1AirQuality.class);
+                        startActivity(i);
+                    }
+                });
                 TextView snippet = ((TextView) infoWindow.findViewById(R.id.snippet));
                 snippet.setText(marker.getSnippet());
 
@@ -439,6 +595,14 @@ public class MapsActivity extends FragmentActivity
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                                     new LatLng(mLastKnownLocation.getLatitude(),
                                             mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
+                            /*if (Frag_realtime.temperature >=15) {
+                                Circle circle = mMap.addCircle(new CircleOptions()
+                                        .center(new LatLng(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude()))
+                                        .radius(10000)
+                                        .strokeColor(Color.RED)
+                                        .fillColor(Color.RED));
+                                circle.isVisible();
+                            }*/
                         } else {
                             Log.d(TAG, "Current location is null. Using defaults.");
                             Log.e(TAG, "Exception: %s", task.getException());
@@ -669,16 +833,16 @@ public class MapsActivity extends FragmentActivity
                 Log.e(TAG, "onResult : NullPointerException: " + e.getMessage());
             }
             moveCamera(new LatLng(place.getViewport().getCenter().latitude,
-                    place.getViewport().getCenter().longitude),15,mPlace.getName());
+                    place.getViewport().getCenter().longitude), 15, mPlace.getName());
             places.release();
         }
     };
 
     private void moveCamera(LatLng latLng, float zoom, String title) {
         Log.d(TAG, "moveCamera : moving the camera to : 1st : " + latLng.latitude + ", lng: " + latLng.longitude);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,zoom));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
 
-        if(!title.equals("My Location")){
+        if (!title.equals("My Location")) {
             MarkerOptions options = new MarkerOptions()
                     .position(latLng)
                     .title(title);
@@ -686,6 +850,58 @@ public class MapsActivity extends FragmentActivity
         }
     }
 
+    public static int getandgodb() {
+        int result = 0;
+        Random rand = new Random();
+        double a = 31 * rand.nextDouble();
+        double b = 31 * rand.nextDouble();
+        double c = 31 * rand.nextDouble();
+        double d = 31 * rand.nextDouble();
+        double e = 31 * rand.nextDouble();
+        double Vtemp = 0.0, VNO2 = 0.0, VO3 = 0.0, VCO = 0.0, VSO2 = 0.0;
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        String Vdate = sdf.format(new Date());
+        JSONObject json = new JSONObject();
+        try {
+            json.put("temp", String.valueOf(a));
+            json.put("NO2", String.valueOf(b));
+            json.put("O3", String.valueOf(c));
+            json.put("CO", String.valueOf(d));
+            json.put("SO2", String.valueOf(e));
+            json.put("date", Vdate);
+
+        } catch (JSONException ex) {
+            ex.printStackTrace();
+        }
+        String body = json.toString();
+        Log.d("JSON_body : ", body);
+        String response;
+        try {
+            JSONObject responseJSON = new JSONObject(body);
+            Vtemp = (Double) responseJSON.getDouble("temp");
+            VNO2 = (Double) responseJSON.getDouble("NO2");
+            VO3 = (Double) responseJSON.getDouble("O3");
+            VCO = (Double) responseJSON.getDouble("CO");
+            VSO2 = (Double) responseJSON.getDouble("SO2");
+            Vdate = (String) responseJSON.getString("date");
+            Frag_realtime.Ftemperature = Double.valueOf(String.format("%.2f", Vtemp));
+            Frag_realtime.FNO2 = Double.valueOf(String.format("%.2f", VNO2));
+            Frag_realtime.FO3 = Double.valueOf(String.format("%.2f", VO3));
+            Frag_realtime.FCO = Double.valueOf(String.format("%.2f", VCO));
+            Frag_realtime.FSO2 = Double.valueOf(String.format("%.2f", VSO2));
+            Frag_realtime.date = Vdate;
+
+            if (body.equals("")) {
+                result = 0;
+            } else {
+                result = 1;
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            Log.d("JSON_2line:", "problem");
+        }
+        return result;
+    }
 
     private class GetContacts extends AsyncTask<Void, Void, Void> {
         @Override
@@ -708,25 +924,6 @@ public class MapsActivity extends FragmentActivity
                 for (int i = 0; i < contacts.length(); i++) {
                     JSONObject c = contacts.getJSONObject(i);
                     String VMAC = c.getString("MAC");
-                    int Vtime = c.getInt("time");
-                    double Vtemp = c.getDouble("temp");
-                    double VNO2 = c.getDouble("NO2");
-                    double VO3 = c.getDouble("O3");
-                    double VCO = c.getDouble("CO");
-                    double VSO2 = c.getDouble("SO2");
-                    MAC = VMAC;
-                    testDate = Vtime;
-                    NO2 = VNO2;
-                    temp = Vtemp;
-                    O3 = VO3;
-                    CO = VCO;
-                    SO2 = VSO2;
-
-                    // Phone node is JSON Object
-                    JSONObject phone = c.getJSONObject("phone");
-                    String mobile = phone.getString("mobile");
-                    String home = phone.getString("home");
-                    String office = phone.getString("office");
 
                     // tmp hash map for single contact
                     HashMap<String, String> contact = new HashMap<>();
@@ -762,8 +959,123 @@ public class MapsActivity extends FragmentActivity
 
         }
     }
+    class AirtoServer extends AsyncTask<String, Integer, Integer> {
+        Context context;
+
+        AirtoServer(Context etx) {
+            context = etx;
+        }
+
+        protected void onPreExecute() {
+
+        }
+
+        @Override
+        protected Integer doInBackground(String... value) {
+            int result = airtoserver();
+            switch (result) {
+                case 1:
+                    publishProgress(1);
+                    break;
+
+                case 2:
+                    publishProgress(2);
+
+                    break;
+                default:
+//                    Toast.makeText(getApplicationContext(), "System Error/Connection Fail", Toast.LENGTH_SHORT).show();
+                    break;
+            }
+            return null;
+        }
+
+        protected void onProgressUpdate(Integer... value) {
+            AlertDialog alertdialog = new AlertDialog.Builder(context).create();
+            if (value[0] == 1) {
+                Toast.makeText(context,"Air quality transfer success",Toast.LENGTH_SHORT).show();
+            } else if (value[0] == 2) {
+                Toast.makeText(context,"Air quality transfer failed",Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        public int airtoserver() {
+            StringBuilder output = new StringBuilder();
+            InputStream is;
+            ByteArrayOutputStream baos;
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String currentDateandTime = sdf.format(new Date());
+            int result = 0;
+            int usn;
+            try {
+                URL url = new URL("http://teama-iot.calit2.net/app/airQualityDataTransfer");
+                conn = (HttpURLConnection) url.openConnection();
+
+                JSONObject json = new JSONObject();
+                try {
+                    json.put("USN", loginActivity.ST_usn);
+                    json.put("TIME",currentDateandTime );
+                    json.put("MAC",BluetoothConnection.MAC);
+                    json.put("latitude",MapsActivity.mLastKnownLocation.getLatitude());
+                    json.put("longitude",MapsActivity.mLastKnownLocation.getLongitude());
+                    json.put("CO",BluetoothConnection.CO);
+                    json.put("SO2",BluetoothConnection.SO2);
+                    json.put("NO2",BluetoothConnection.NO2);
+                    json.put("O3",BluetoothConnection.O3);
+                    json.put("PM25",BluetoothConnection.PM25);
+                    json.put("TEMP",BluetoothConnection.TEMP);
 
 
+                } catch (JSONException ex) {
+                    ex.printStackTrace();
+                }
+
+                String body = json.toString();
+                Log.d("JSON_body : ", body);
+                if (conn != null) {
+                    conn.setConnectTimeout(10000);
+                    conn.setRequestMethod("POST");
+                    conn.setDoInput(true);
+                    conn.setDoOutput(true);
+                    conn.setRequestProperty("Content-Type", "application/json");
+
+                    OutputStream os = conn.getOutputStream();
+                    os.write(body.getBytes());
+                    os.flush();
+                    String response;
+                    int responseCode = conn.getResponseCode();
+
+                    if (responseCode == HttpURLConnection.HTTP_OK) {
+                        is = conn.getInputStream();
+                        baos = new ByteArrayOutputStream();
+                        byte[] byteBuffer = new byte[1024];
+                        byte[] byteData = null;
+                        int nLength = 0;
+                        while ((nLength = is.read(byteBuffer, 0, byteBuffer.length)) != -1) {
+                            baos.write(byteBuffer, 0, nLength);
+                        }
+                        byteData = baos.toByteArray();
+                        response = new String(byteData);
+                        Log.d("response",response);
+                        JSONObject responseJSON = new JSONObject(response);
+                        result = (Integer) responseJSON.getInt("Result");
+                        Log.d("AIRQUAILITY RESULT: ",String.valueOf(result));
+                        is.close();
+                        os.close();
+                        conn.disconnect();
+                    }
+                } else {
+                    Log.d("JSON", "Connection fail");
+                }
+            } catch (MalformedURLException ex) {
+                ex.printStackTrace();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                Log.d("JSON_2line:", "problem");
+            }
+            return result;
+        }
+
+    }
 }
 
 

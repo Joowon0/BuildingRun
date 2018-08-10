@@ -1,8 +1,10 @@
 package com.example.samsung.team_a;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,24 +17,30 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
+import android.widget.Toast;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 
-public class loginActivity extends AppCompatActivity{
+public class loginActivity extends AppCompatActivity {
     EditText edtID, edtPass;
-    Button btnLogin,btnFind,btnNewId;
+    Button btnLogin, btnFind, btnNewId;
     AlertDialog alertdialog;
-    public static String STuser_id="";
-    public static String STuser_pass="";
+    public static String STuser_id = "";
+    public static String STuser_pass = "";
+    public static int ST_usn;
+    public static String ST_email, ST_firstname, ST_lastname;
+    private HttpURLConnection conn;
+    private SharedPreferences prf;
+    private SharedPreferences.Editor editor;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -42,14 +50,21 @@ public class loginActivity extends AppCompatActivity{
         setContentView(R.layout.activity_login);
         edtID = (EditText) findViewById(R.id.edtId);
         edtPass = (EditText) findViewById(R.id.edtPass);
-        btnLogin=(Button) findViewById(R.id.btnLogin);
-        btnFind=(Button) findViewById(R.id.btn_find);
-        btnNewId=(Button) findViewById(R.id.btnNewID);
+        btnLogin = (Button) findViewById(R.id.btnLogin);
+        btnFind = (Button) findViewById(R.id.btn_find);
+        btnNewId = (Button) findViewById(R.id.btnNewID);
 
     } //onCreate
+
     Handler sHandler = new Handler() {
         public void handleMessage(Message msg) {
             Intent i = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(i);
+        }
+    };
+    Handler aHandler = new Handler() {
+        public void handleMessage(Message msg) {
+            Intent i = new Intent(getApplicationContext(), loginActivity.class);
             startActivity(i);
         }
     };
@@ -68,18 +83,15 @@ public class loginActivity extends AppCompatActivity{
     public void loginButtonClick(View v) {
         String userIdValue = edtID.getText().toString();
         String userPassValue = edtPass.getText().toString();
-        alertdialog= new AlertDialog.Builder(loginActivity.this).create();
-        if(edtID.getText().toString().equals("") ||edtPass.getText().toString().equals("")){
+        alertdialog = new AlertDialog.Builder(loginActivity.this).create();
+        if (edtID.getText().toString().equals("") || edtPass.getText().toString().equals("")) {
             alertdialog.setTitle("message");
             alertdialog.setMessage("Please input your information");
             alertdialog.show();
-        }
-        else {
-            String type = "login";
+        } else {
 
             loginBW loginbw = new loginBW(this);
-            loginbw.execute(type, userIdValue, userPassValue);
-            Log.d("ID =???",loginActivity.STuser_id);
+            loginbw.execute();
         }
     }
 
@@ -94,100 +106,139 @@ public class loginActivity extends AppCompatActivity{
         Intent i = new Intent(loginActivity.this, Find_pwActivity.class);
         loginActivity.this.startActivity(i);
     }
-}
 
-class loginBW extends AsyncTask<String, Void, String> {
+    class loginBW extends AsyncTask<String, Integer, Integer> {
+        Context context;
 
-    String type = "";
-    Context context;
-    AlertDialog alertdialog;
-    public static String isitlogin="";
+        loginBW(Context etx) {
+            context = etx;
+        }
 
-    loginBW(Context etx){
-        context =etx;
-    }
+        protected void onPreExecute() {
 
-    public loginBW() {
-        // TODO Auto-generated constructor stub
-    }
+        }
 
-    @Override
-    protected String doInBackground(String... params) {
-        // TODO Auto-generated method stub
-        type=params[0];
-        String login_url="http://"+FirstActivity.connectIP+"/login.php";
-        if(type.equals("login")){
+        @Override
+        protected Integer doInBackground(String... value) {
+            int result = signIn();
+            switch (result) {
+                case Constants.SI_SUCCESS:
+                    publishProgress(1);
+                    break;
+
+                case Constants.SI_NO_SUCH_EMAIL:
+                    publishProgress(2);
+                    edtID.setText("");
+                    edtPass.setText("");
+                    break;
+
+                case Constants.SI_WRONG_PASSWORD:
+                    publishProgress(3);
+                    edtPass.setText("");
+                    break;
+
+                case Constants.SI_NONCE_EXIST:
+                    publishProgress(4);
+                    break;
+
+                default:
+//                    Toast.makeText(getApplicationContext(), "System Error/Connection Fail", Toast.LENGTH_SHORT).show();
+                    break;
+            }
+            return null;
+        }
+
+        protected void onProgressUpdate(Integer... value) {
+            AlertDialog alertdialog = new AlertDialog.Builder(context).create();
+            if (value[0] == Constants.SU_SUCCESS) {
+                sHandler.sendEmptyMessageDelayed(0, 10);
+            } else if (value[0] == Constants.SI_NO_SUCH_EMAIL) {
+                alertdialog.setTitle("information");
+                alertdialog.setMessage("There is no account corresponding to input Email.");
+                alertdialog.show();
+                edtID.setText("");
+                edtPass.setText("");
+            } else if (value[0] == Constants.SI_WRONG_PASSWORD) {
+                alertdialog.setTitle("information");
+                alertdialog.setMessage("Wrong password. Please enter again.");
+                alertdialog.show();
+                edtPass.setText("");
+            } else if (value[0] == Constants.SI_NONCE_EXIST) {
+                alertdialog.setTitle("information");
+                alertdialog.setMessage("Please activate your account. The activation link is sent to you email.");
+                alertdialog.show();
+            }
+        }
+
+        public int signIn() {
+            StringBuilder output = new StringBuilder();
+            InputStream is;
+            ByteArrayOutputStream baos;
+            int result = 0;
+            int usn;
             try {
-                String user_id = params[1];
-                String user_pass = params[2];
-                loginActivity.STuser_id = user_id;
-                loginActivity.STuser_pass = user_pass;
+                URL url = new URL("http://teama-iot.calit2.net/app/login");
+                conn = (HttpURLConnection) url.openConnection();
 
-                URL url=new URL(login_url);
-                HttpURLConnection httpURLConnection=(HttpURLConnection)url.openConnection();
-                httpURLConnection.setRequestMethod("POST");
-                httpURLConnection.setDoOutput(true);
-                httpURLConnection.setDoInput(true);
-                OutputStream outputstream=httpURLConnection.getOutputStream();
-                BufferedWriter bufferedWriter =new BufferedWriter(new OutputStreamWriter(outputstream,"UTF-8"));
-                String post_data = URLEncoder.encode("EmailAddress","UTF-8")+"="+URLEncoder.encode(user_id,"UTF-8")
-                        +"&"+URLEncoder.encode("HPassword","UTF-8")+"="+URLEncoder.encode(user_pass,"UTF-8");
-                bufferedWriter.write(post_data);
-                bufferedWriter.flush();
-                bufferedWriter.close();
-                outputstream.close();
-                InputStream inputStream=httpURLConnection.getInputStream();
-                BufferedReader bufferedReader=new BufferedReader(new InputStreamReader(inputStream,"UTF-8"));
-                String result="";
-                String line="";
+                JSONObject json = new JSONObject();
+                try {
+                    json.put("email", edtID.getText().toString());
+                    json.put("password", edtPass.getText().toString());
 
-                while((line=bufferedReader.readLine())!=null){
-                    result+=line;
+                } catch (JSONException ex) {
+                    ex.printStackTrace();
                 }
-                bufferedReader.close();
-                inputStream.close();
-                httpURLConnection.disconnect();
-                return result;
-            } catch (MalformedURLException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-        return null;
-    }
 
-    @Override
-    protected void onPreExecute() {
-        // TODO Auto-generated method stub
-        alertdialog= new AlertDialog.Builder(context).create();
-        alertdialog.setTitle("message");
-    }
-    @Override
-    protected void onPostExecute(String result) {
-        // TODO Auto-generated method stub
-        if(type.equals("login"))
-        {
-            if(result.substring(1,2).equals("1"))
-            {
-                alertdialog.setMessage("Login success.");
-                Intent i = new Intent(context, MainActivity.class);
-                context.startActivity(i);
+                String body = json.toString();
+                Log.d("JSON_body : ", body);
+                if (conn != null) {
+                    conn.setConnectTimeout(10000);
+                    conn.setRequestMethod("POST");
+                    conn.setDoInput(true);
+                    conn.setDoOutput(true);
+                    conn.setRequestProperty("Content-Type", "application/json");
+
+                    OutputStream os = conn.getOutputStream();
+                    os.write(body.getBytes());
+                    os.flush();
+                    String response;
+                    int responseCode = conn.getResponseCode();
+
+                    if (responseCode == HttpURLConnection.HTTP_OK) {
+                        is = conn.getInputStream();
+                        baos = new ByteArrayOutputStream();
+                        byte[] byteBuffer = new byte[1024];
+                        byte[] byteData = null;
+                        int nLength = 0;
+                        while ((nLength = is.read(byteBuffer, 0, byteBuffer.length)) != -1) {
+                            baos.write(byteBuffer, 0, nLength);
+                        }
+                        byteData = baos.toByteArray();
+                        response = new String(byteData);
+                        Log.d("response",response);
+                        JSONObject responseJSON = new JSONObject(response);
+                        result = (Integer) responseJSON.getInt("Result");
+                        ST_usn = (Integer) responseJSON.getInt("USN");
+                        ST_email = (String) responseJSON.getString("email");
+                        ST_firstname = (String) responseJSON.getString("firstName");
+                        ST_lastname = (String) responseJSON.getString("lastName");
+                        Log.d("ST_USN in Login",String.valueOf(ST_usn));
+                        is.close();
+                        os.close();
+                        conn.disconnect();
+                    }
+                } else {
+                    Log.d("JSON", "Connection fail");
+                }
+            } catch (MalformedURLException ex) {
+                ex.printStackTrace();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                Log.d("JSON_2line:", "problem");
             }
-            else
-            {
-                alertdialog.setMessage("Check your E-mail and Password.");
-                loginActivity.STuser_id="";
-                loginActivity.STuser_pass="";
-            }
-            alertdialog.show();
+            return result;
         }
-    }
-    @Override
-    protected void onProgressUpdate(Void... values) {
-        // TODO Auto-generated method stub
-        super.onProgressUpdate(values);
+
     }
 }
+

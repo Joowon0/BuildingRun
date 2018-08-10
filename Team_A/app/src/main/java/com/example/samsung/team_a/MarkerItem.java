@@ -1,8 +1,6 @@
 package com.example.samsung.team_a;
 
-/**
- * Created by TedPark on 16. 4. 26..
- */
+
 public class MarkerItem {
 
 

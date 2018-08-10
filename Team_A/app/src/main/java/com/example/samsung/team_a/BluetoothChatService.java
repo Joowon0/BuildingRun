@@ -170,6 +170,7 @@ public class BluetoothChatService {
     public synchronized void connected(BluetoothSocket socket, BluetoothDevice
             device, final String socketType) {
         Log.d(TAG, "connected, Socket Type:" + socketType);
+        Log.d(TAG, "connected device:" + device.getAddress());
 
         // Cancel the thread that completed the connection
         if (mConnectThread != null) {

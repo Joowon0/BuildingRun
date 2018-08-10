@@ -8,7 +8,7 @@
     tools:context=".Find_pwActivity">
 
     <Button
-        android:id="@+id/btnFindCancel"
+        android:id="@+id/btnverify"
         android:layout_width="0dp"
         android:layout_height="70dp"
         android:layout_marginEnd="24dp"
@@ -32,10 +32,10 @@
         android:layout_marginTop="220dp"
         android:ems="10"
         android:hint="Enter your E-mail"
-        android:inputType="textPassword"
+        android:inputType="text"
         android:textColor="@android:color/white"
-        android:textSize="18dp"
         android:textColorHint="#A8AEB9"
+        android:textSize="18dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

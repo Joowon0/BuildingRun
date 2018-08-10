@@ -17,12 +17,14 @@
 package com.example.samsung.team_a;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -33,6 +35,15 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Set;
 
 /**
@@ -61,8 +72,11 @@ public class DeviceListActivity extends Activity{
     /**
      * Newly discovered devices
      */
+    public static String info ="";
+    public static String address ="";
     private ArrayAdapter<String> mNewDevicesArrayAdapter;
-
+    private HttpURLConnection conn;
+    BluetoothConnection bluetoothConnection;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -141,7 +155,7 @@ public class DeviceListActivity extends Activity{
     /**
      * Start device discover with the BluetoothAdapter
      */
-    private void doDiscovery() {
+    public void doDiscovery() {
         Log.d(TAG, "doDiscovery()");
 
         // Indicate scanning in the title
@@ -163,31 +177,137 @@ public class DeviceListActivity extends Activity{
     /**
      * The on-click listener for all devices in the ListViews
      */
-    private AdapterView.OnItemClickListener mDeviceClickListener
+    public AdapterView.OnItemClickListener mDeviceClickListener
             = new AdapterView.OnItemClickListener() {
         public void onItemClick(AdapterView<?> av, View v, int arg2, long arg3) {
             // Cancel discovery because it's costly and we're about to connect
+
             mBtAdapter.cancelDiscovery();
 
             // Get the device MAC address, which is the last 17 chars in the View
-            String info = ((TextView) v).getText().toString();
-            String address = info.substring(info.length() - 17);
+            info = ((TextView) v).getText().toString();
+            address = info.substring(info.length() - 17);
+
 
             // Create the result Intent and include the MAC address
             Intent intent = new Intent();
             intent.putExtra(EXTRA_DEVICE_ADDRESS, address);
 
+            Log.d("됐냐?", "ok");
             // Set result and finish this Activity
             setResult(Activity.RESULT_OK, intent);
             finish();
         }
     };
+    /*class Register extends AsyncTask<String, Integer, Integer> {
+        Context context;
 
+        Register(Context etx) {
+            context = etx;
+        }
+
+        protected void onPreExecute() {
+
+        }
+
+        @Override
+        protected Integer doInBackground(String... value) {
+            boolean result = register();
+            if (result) {
+                publishProgress(1);
+            } else publishProgress(2);
+            return null;
+        }
+
+        protected void onProgressUpdate(Integer... value) {
+            AlertDialog alertdialog = new AlertDialog.Builder(context).create();
+            if (value[0] == 1) {
+                alertdialog.setTitle("Register");
+                alertdialog.setMessage("Success");
+                alertdialog.show();
+                RegisterActivity.sensorAList.add("User : " + loginActivity.ST_email + "\nMAC : " + address);
+
+                //MAC address 받기 즉 이 activity안에도 mason코드를 써야해
+            } else {
+                alertdialog.setTitle("Register");
+                alertdialog.setMessage("Success");
+                alertdialog.show();
+            }
+        }
+
+        public boolean register() {
+            StringBuilder output = new StringBuilder();
+            InputStream is;
+            ByteArrayOutputStream baos;
+            boolean result = false;
+            try {
+                URL url = new URL("http://teama-iot.calit2.net/app/sensorRegister");
+                conn = (HttpURLConnection) url.openConnection();
+
+                JSONObject json = new JSONObject();
+                try {
+                    json.put("USN", loginActivity.ST_usn);
+                    json.put("MAC", BluetoothConnection.mmDevice.getAddress());//mac은 bluetooth 클릭시 연결되었을 때 mdevice.get뭐시기
+                    json.put("latitude", MapsActivity.mLastKnownLocation.getLatitude());
+                    json.put("longitude", MapsActivity.mLastKnownLocation.getLongitude());
+
+                } catch (JSONException ex) {
+                    ex.printStackTrace();
+                }
+
+                String body = json.toString();
+                Log.d("JSON_body : ", body);
+                if (conn != null) {
+                    conn.setConnectTimeout(10000);
+                    conn.setRequestMethod("POST");
+                    conn.setDoInput(true);
+                    conn.setDoOutput(true);
+                    conn.setRequestProperty("Content-Type", "application/json");
+
+                    OutputStream os = conn.getOutputStream();
+                    os.write(body.getBytes());
+                    os.flush();
+                    String response;
+                    int responseCode = conn.getResponseCode();
+
+                    if (responseCode == HttpURLConnection.HTTP_OK) {
+                        is = conn.getInputStream();
+                        baos = new ByteArrayOutputStream();
+                        byte[] byteBuffer = new byte[1024];
+                        byte[] byteData = null;
+                        int nLength = 0;
+                        while ((nLength = is.read(byteBuffer, 0, byteBuffer.length)) != -1) {
+                            baos.write(byteBuffer, 0, nLength);
+                        }
+                        byteData = baos.toByteArray();
+                        response = new String(byteData);
+                        Log.d("response", response);
+                        JSONObject responseJSON = new JSONObject(response);
+                        result = (Boolean) responseJSON.getBoolean("ACK");
+
+                        is.close();
+                        os.close();
+                        conn.disconnect();
+                    }
+                } else {
+                    Log.d("JSON", "Connection fail");
+                }
+            } catch (MalformedURLException ex) {
+                ex.printStackTrace();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                Log.d("JSON_2line:", "problem");
+            }
+            bluetoothConnection.run();
+            return result;
+        }
+
+    }*/
     /**
      * The BroadcastReceiver that listens for discovered devices and changes the title when
      * discovery is finished
      */
-    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+    public final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();

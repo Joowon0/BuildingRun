@@ -6,32 +6,37 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_BluetoothChat"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/bluetoothchat1x"
             android:title="Bluetooth Chat" />
+        <item
+            android:id="@+id/nav_mysensor"
+            android:icon="@drawable/sensor1x"
+            android:title="My Sensor" />
 
         <item
-            android:id="@+id/nav_My_sensor"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="My sensor" />
-        <item
             android:id="@+id/nav_HeartRate"
-            android:icon="@drawable/ic_menu_manage"
+            android:icon="@drawable/heartrate1x"
             android:title="Heart Rate" />
+        <item
+            android:id="@+id/nav_Map"
+            android:icon="@drawable/googlemap1x"
+            android:title="Map" />
+
     </group>
 
     <item android:title="Personal information">
         <menu>
             <item
                 android:id="@+id/nav_Change_Password"
-                android:icon="@drawable/ic_menu_gallery"
+                android:icon="@drawable/passwordchange1x"
                 android:title="Change Password" />
             <item
                 android:id="@+id/nav_account_cancel"
-                android:icon="@drawable/ic_menu_send"
+                android:icon="@drawable/cancellation1x"
                 android:title="Account Cancellation" />
             <item
                 android:id="@+id/nav_logout"
-                android:icon="@drawable/ic_menu_share"
+                android:icon="@drawable/logout1x"
                 android:title="Log Out" />
         </menu>
     </item>

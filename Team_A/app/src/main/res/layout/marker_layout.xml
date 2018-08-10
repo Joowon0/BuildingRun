@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 
-        android:background="@mipmap/ic_marker_phone"
+        android:background="@mipmap/ic_marker_phone_9"
         android:gravity="center"
         android:text="13.5만원"
         android:textSize="16sp"/>
