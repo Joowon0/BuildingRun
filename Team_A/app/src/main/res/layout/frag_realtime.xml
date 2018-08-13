@@ -12,8 +12,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:layout_marginRight="15dp">
 
         <TextView
             android:id="@+id/txt_CO"
@@ -21,7 +21,16 @@
             android:layout_height="wrap_content"
             android:textStyle="bold"
             android:textSize="15dp"
-            android:text="TextView" />
+            android:text="TextView"
+            />
+        <ProgressBar
+            android:id="@+id/progressCo"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginBottom="10dp"
+            android:max="500"/>
 
         <TextView
             android:id="@+id/txt_NO2"
@@ -30,6 +39,15 @@
             android:textStyle="bold"
             android:textSize="15dp"
             android:text="TextView" />
+        <ProgressBar
+            android:id="@+id/progressNo2"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginBottom="10dp"
+            android:max="1000"/>
+
 
         <TextView
             android:id="@+id/txt_SO2"
@@ -38,6 +56,14 @@
             android:textStyle="bold"
             android:textSize="15dp"
             android:text="TextView" />
+        <ProgressBar
+            android:id="@+id/progressSo2"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginBottom="10dp"
+            android:max="300"/>
 
         <TextView
             android:id="@+id/textView5"
@@ -63,6 +89,14 @@
             android:textStyle="bold"
             android:textSize="15dp"
             android:text="TextView" />
+        <ProgressBar
+            android:id="@+id/progressPm25"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginBottom="10dp"
+            android:max="25"/>
 
         <TextView
             android:id="@+id/txt_O3"
@@ -71,6 +105,14 @@
             android:textStyle="bold"
             android:textSize="15dp"
             android:text="TextView" />
+        <ProgressBar
+            android:id="@+id/progressO3"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginBottom="10dp"
+            android:max="1850"/>
 
         <TextView
             android:id="@+id/txt_temperature"
@@ -79,7 +121,14 @@
             android:textStyle="bold"
             android:textSize="15dp"
             android:text="TextView" />
+        <ProgressBar
+            android:id="@+id/progressTemp"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginBottom="10dp"
+            android:max="30"/>
 
     </LinearLayout>
 </LinearLayout>
-

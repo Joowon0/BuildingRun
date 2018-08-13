@@ -89,8 +89,6 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "너의 목숨을 구원하리라", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
             }
         });
 
@@ -237,9 +235,9 @@ public class MainActivity extends AppCompatActivity
                 case 0:
                     tab1AirQuality tab1= new tab1AirQuality();
                     return tab1;
-                case 1:
+                /*case 1:
                     tab2HearRate tab2= new tab2HearRate();
-                    return tab2;
+                    return tab2;*/
                 /*case 2:
                     frag_historic tab3= new frag_historic();
                     return tab3;*/
@@ -252,7 +250,7 @@ public class MainActivity extends AppCompatActivity
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 2;
+            return 1;
         }
 
         @Nullable
@@ -261,8 +259,8 @@ public class MainActivity extends AppCompatActivity
             switch (position) {
                 case 0:
                     return "Air Quality";
-                case 1:
-                    return "Heart Rate";
+                /*case 1:
+                    return "Heart Rate";*/
                 /*case 2:
                     return "Map";*/
 

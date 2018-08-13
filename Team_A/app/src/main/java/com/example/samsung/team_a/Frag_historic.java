@@ -18,7 +18,7 @@ import java.util.ArrayList;
 public class Frag_historic extends Fragment {
     static final String[] LIST_MENU = {"SSN : 1\nMAC_Addr : CC-B0-DA-50-51-0B", "SSN : 2\nMAC_Addr : 6F-23-A5-6E-89-7B", "SSN : 3\nMAC_Addr : 6F-23-A5-6E-89-7C"};
     ListView listview = null;
-    ArrayList<tab1AirQuality.info> SensorInfoList = new ArrayList<tab1AirQuality.info>();
+    //ArrayList<tab1AirQuality.info> SensorInfoList = new ArrayList<tab1AirQuality.info>();
     class info{
         public int SSN;
         public String address;

@@ -6,15 +6,12 @@ public class MarkerItem {
 
     double lat;
     double lon;
-    int ssn;
-    String name;
+
     String address;
 
-    public MarkerItem(double lat, double lon, int ssn, String name ,String address) {
+    public MarkerItem(double lat, double lon, String address) {
         this.lat = lat;
         this.lon = lon;
-        this.ssn = ssn;
-        this.name = name;
         this.address = address;
     }
 
@@ -34,13 +31,6 @@ public class MarkerItem {
         this.lon = lon;
     }
 
-    public int getssn() {
-        return ssn;
-    }
-
-    public void sessn(int ssn) {
-        this.ssn = ssn;
-    }
 
     public String getaddress() {
         return address;
@@ -49,11 +39,5 @@ public class MarkerItem {
     public void setAddress(String address) {
         this.address = address;
     }
-    public String getname() {
-        return name;
-    }
 
-    public void setname(String name) {
-        this.name = name ;
-    }
 }

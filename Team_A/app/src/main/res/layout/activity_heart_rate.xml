@@ -50,6 +50,9 @@
             android:id="@+id/textView1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="14dp"
+            android:textColor="@android:color/holo_blue_dark"
             android:text="@string/selectDevice" />
 
         <Spinner
@@ -66,7 +69,7 @@
             android:text="@string/rpm"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="@android:color/holo_red_dark"
-            android:textSize="50sp" />
+            android:textSize="55sp" />
 
         <TextView
             android:id="@+id/txt_RR"
@@ -75,39 +78,8 @@
             android:layout_gravity="center_horizontal"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="@android:color/holo_red_dark"
-            android:textSize="15sp"
+            android:textSize="20sp"
             android:text="RR : milliseconds" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center">
-
-            <TextView
-                android:id="@+id/min"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="@string/min" />
-
-            <TextView
-                android:id="@+id/avg"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="@string/avg" />
-
-            <TextView
-                android:id="@+id/max"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="@string/max" />
-
-        </LinearLayout>
 
 
     </LinearLayout>

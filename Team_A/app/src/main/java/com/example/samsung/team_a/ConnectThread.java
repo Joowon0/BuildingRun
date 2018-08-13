@@ -58,7 +58,7 @@ public class ConnectThread extends Thread {
 				if (ok==0)// try 2 times
 					ok++;
 				else{
-					ac.connectionError();
+		//			ac.connectionError();
 					Log.e("ConnectThread","Error with the BT stack " + connectException.toString());
 
 					try {
@@ -75,7 +75,7 @@ public class ConnectThread extends Thread {
 			try {
 				DataHandler.getInstance().acqui(mmSocket.getInputStream().read()); //read value
 			} catch (IOException e) {
-				ac.connectionError();
+			//	ac.connectionError();
 				Log.e("ConnectThread","Error with the BT stack " + e.toString());
 
 				try {

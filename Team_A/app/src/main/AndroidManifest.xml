@@ -74,7 +74,7 @@
 
         <activity
             android:name=".MapsActivity"
-            android:theme="@style/Theme.AppCompat.Light" />
+            android:theme="@style/Widget.AppCompat.ActionBar"  />
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"

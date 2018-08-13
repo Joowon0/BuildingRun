@@ -32,6 +32,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.crypto.Mac;
+
 public class RegisterActivity extends AppCompatActivity {
     public static Context context;
     TextView txt_AQinfo;
@@ -49,20 +51,23 @@ public class RegisterActivity extends AppCompatActivity {
     private static final int REQUEST_CONNECT_DEVICE_SECURE = 1;
     private static final int REQUEST_ENABLE_BT = 3;
      //여기서 선택된 MAC주소를 public string으로 박고 tab1AirQuality에 보내야해
-    public static ArrayList<String> sensorAList = new ArrayList<>();
+    private ArrayList<String> MacList = new ArrayList<>();
+    private ArrayList<String> LatList = new ArrayList<>();
+    private ArrayList<String> LongList = new ArrayList<>();
+
     Intent main_to_devicelist;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-        ArrayAdapter<String> mAdapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,sensorAList);
+        ArrayAdapter<String> mAdapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,MacList);
         BluetoothConnection.state =1;
         ListView sensorLV = (ListView)findViewById(R.id.sensorList);
         Button btn_AQRG = (Button) findViewById(R.id.btn_AQRG);
         Button btn_AQDG = (Button) findViewById(R.id.btn_AQDG);
         sensorLV.setAdapter(mAdapter);
-        SensorView sensorView = new SensorView(this);
+        //SensorView sensorView = new SensorView(this);
         //sensorView.execute();
         aHandler.sendEmptyMessageDelayed(0, 2000);
         main_to_devicelist = new Intent(RegisterActivity.this, DeviceListActivity.class);
@@ -106,7 +111,7 @@ public class RegisterActivity extends AppCompatActivity {
             try {
                 JSONObject jsonRegister = new JSONObject(Vregister);
                 VMAC = jsonRegister.getString("MAC");
-                sensorAList.add(VMAC);
+                MacList.add(VMAC);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -117,113 +122,7 @@ public class RegisterActivity extends AppCompatActivity {
         }
     };
 
-    class SensorView extends AsyncTask<String, Integer, Integer> {
-        Context context;
 
-        SensorView(Context etx) {
-            context = etx;
-        }
-
-        protected void onPreExecute() {
-
-        }
-
-        @Override
-        protected Integer doInBackground(String... value) {
-            if (sensorview() > 1) {
-                publishProgress(1);
-            } else publishProgress(2);
-            return null;
-        }
-
-        protected void onProgressUpdate(Integer... value) {
-            AlertDialog alertdialog = new AlertDialog.Builder(context).create();
-            if (value[0] == 1) {
-                //listview에 값 추가
-                txt_AQinfo.setText("User : " + loginActivity.ST_email + "\nMAC : " + VMAC);//MAC address 받기 즉 이 activity안에도 mason코드를 써야해
-            } else {
-                alertdialog.setTitle("Register");
-                alertdialog.setMessage("You don't have any sensor. Register First.");
-                alertdialog.show();
-            }
-        }
-
-        public int sensorview() {
-            StringBuilder output = new StringBuilder();
-            InputStream is;
-            ByteArrayOutputStream baos;
-
-
-            try {
-                URL url = new URL("http://teama-iot.calit2.net/app/sensorListView");
-                conn = (HttpURLConnection) url.openConnection();
-
-                JSONObject json = new JSONObject();
-                try {
-                    json.put("USN", loginActivity.ST_usn);
-
-                } catch (JSONException ex) {
-                    ex.printStackTrace();
-                }
-
-                String body = json.toString();
-                Log.d("JSON_body : ", body);
-                if (conn != null) {
-                    conn.setConnectTimeout(10000);
-                    conn.setRequestMethod("POST");
-                    conn.setDoInput(true);
-                    conn.setDoOutput(true);
-                    conn.setRequestProperty("Content-Type", "application/json");
-
-                    OutputStream os = conn.getOutputStream();
-                    os.write(body.getBytes());
-                    os.flush();
-                    String response;
-                    int responseCode = conn.getResponseCode();
-
-                    if (responseCode == HttpURLConnection.HTTP_OK) {
-                        is = conn.getInputStream();
-                        baos = new ByteArrayOutputStream();
-                        byte[] byteBuffer = new byte[1024];
-                        byte[] byteData = null;
-                        int nLength = 0;
-                        while ((nLength = is.read(byteBuffer, 0, byteBuffer.length)) != -1) {
-                            baos.write(byteBuffer, 0, nLength);
-                        }
-                        byteData = baos.toByteArray();
-                        response = new String(byteData);
-                        Log.d("response", response);
-                        try {
-                            JSONArray jsonview = new JSONArray(response);
-                            for (int i = 0; i < jsonview.length(); i++) {
-                                JSONObject jsonObject = jsonview.getJSONObject(i);
-                                VMAC = (String) jsonObject.getString("MAC");
-                                Vlatitude = (Double) jsonObject.getDouble("latitude");
-                                Vlongitude = (Double) jsonObject.getDouble("longitude");
-                                sensorcount++;
-                            }
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                        is.close();
-                        os.close();
-                        conn.disconnect();
-                    }
-                } else {
-                    Log.d("JSON", "Connection fail");
-                }
-            } catch (MalformedURLException ex) {
-                ex.printStackTrace();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                Log.d("JSON_2line:", "problem");
-            }
-            return sensorcount;
-        }
-
-    }
 
     class Register extends AsyncTask<String, Integer, Integer> {
         Context context;
@@ -251,7 +150,7 @@ public class RegisterActivity extends AppCompatActivity {
                 alertdialog.setTitle("Register");
                 alertdialog.setMessage("Success");
                 alertdialog.show();
-                sensorAList.add("User : " + loginActivity.ST_email + "\nMAC : " + VMAC);
+                MacList.add("User : " + loginActivity.ST_email + "\nMAC : " + VMAC);
 
                 //MAC address 받기 즉 이 activity안에도 mason코드를 써야해
             } else {

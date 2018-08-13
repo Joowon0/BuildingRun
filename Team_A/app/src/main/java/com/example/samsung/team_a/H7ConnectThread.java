@@ -64,7 +64,7 @@ public class H7ConnectThread extends Thread {
 	    	if (newState ==  BluetoothGatt.STATE_DISCONNECTED)
 	    	{
 				Log.e("H7ConnectThread", "device Disconnected");
-				ac.connectionError();
+		//		ac.connectionError();
 	    	}
 	    	else{
 				gatt.discoverServices();

@@ -58,16 +58,17 @@
         android:onClick="MapInfoOnclick"
         android:id="@+id/place_info"
         android:src="@drawable/ic_info"/>
+
     <ImageView
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:id="@+id/bluetooth_connect"
+        android:layout_width="37dp"
+        android:layout_height="31dp"
         android:layout_below="@+id/place_info"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="15dp"
-        android:scaleType="centerCrop"
         android:onClick="bluetoothconnect"
-        android:id="@+id/bluetooth_connect"
-        android:src="@drawable/ic_action_device_access_bluetooth_searching"/>
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_action_device_access_bluetooth_searching" />
 
     <ScrollView
         android:id="@+id/scrollview"
@@ -96,7 +97,7 @@
                 android:id="@+id/fr_case"
                 android:name="com.example.samsung.team_a.Frag_realtime"
                 android:layout_width="match_parent"
-                android:layout_height="90dp" >
+                android:layout_height="160dp" >
             </FrameLayout>
 
 </RelativeLayout>
