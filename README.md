@@ -1,12 +1,14 @@
-# Project Title
+# Building Run
 
-One Paragraph of project description goes here
+Air quality and heart data is measured through sensors. A user can view overall data in both app and web.
+(Related to Iot Development Program, 2018 summer, UCSD.)
+
 
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
-### Prerequisites
+### Vagrant
 
 What things you need to install the software and how to install them
 
@@ -14,7 +16,7 @@ What things you need to install the software and how to install them
 Give examples
 ```
 
-### Installing
+### Android Studio
 
 A step by step series of examples that tell you how to get a development env running
 
@@ -32,53 +34,21 @@ until finished
 
 End with an example of getting some data out of the system or using it for a little demo
 
-## Running the tests
-
-Explain how to run the automated tests for this system
-
-### Break down into end to end tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-## Deployment
-
-Add additional notes about how to deploy this on a live system
-
 ## Built With
 
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
+* [PHP](http://php.net/) - The web framework used
+* [MySQL](https://www.mysql.com/) - Database management
+* [Android Studio](https://developer.android.com/studio/) - The android framework used
+* [Udoo board](https://www.udoo.org/) - Air quality measurement
 
-## Contributing
+## Contributors
 
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
+* **Joowon Byun** - *Web development* - https://github.com/Joowon0
+* **Umji Choi (Wendy)** - *Web development* - https://github.com/cute2969
+* **Doyoung Ha (James)** - *App development* - https://github.com/gkehdud
+* **Janghyun Song (Jack)** - *App development* - https://github.com/jhsong13
+* **Junho Suk (Juno)** - *Sensor development* - https://github.com/aaatype
 
-## Versioning
-
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
-
-## Authors
-
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 
 ## Acknowledgments
 
