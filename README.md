@@ -1,38 +1,35 @@
 # Building Run
 
 Air quality and heart data is measured through sensors. A user can view overall data in both app and web.
-(Related to Iot Development Program, 2018 summer, UCSD.)
+(Related to IoT Development Program, 2018 summer, UCSD.)
 
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
-
 ### Vagrant
 
-What things you need to install the software and how to install them
+First, install vagrant to set the local server.
+```
+sudo apt-get install virtualbox
+sudo apt-get install vagrant
+```
+
+Go to where the VagrantFile is and type the following.
+```
+vagrant init
+vagrant up
+```
+
+Now the server is started. To end the server, type the following.
 
 ```
-Give examples
+vagrant halt
 ```
 
 ### Android Studio
 
-A step by step series of examples that tell you how to get a development env running
-
-Say what the step will be
-
-```
-Give the example
-```
-
-And repeat
-
-```
-until finished
-```
-
-End with an example of getting some data out of the system or using it for a little demo
+Install Android Studio to install apk file in you phone or virtual machine.
+You can download it at https://developer.android.com/studio/
 
 ## Built With
 
@@ -48,10 +45,3 @@ End with an example of getting some data out of the system or using it for a lit
 * **Doyoung Ha (James)** - *App development* - https://github.com/gkehdud
 * **Janghyun Song (Jack)** - *App development* - https://github.com/jhsong13
 * **Junho Suk (Juno)** - *Sensor development* - https://github.com/aaatype
-
-
-## Acknowledgments
-
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
