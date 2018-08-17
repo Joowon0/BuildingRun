@@ -1,0 +1,3 @@
+[submodule "web-server/iot/BuildingRun_server"]
+	path = web-server/iot/BuildingRun_server
+	url = https://github.com/Joowon0/BuildingRun_server.git
