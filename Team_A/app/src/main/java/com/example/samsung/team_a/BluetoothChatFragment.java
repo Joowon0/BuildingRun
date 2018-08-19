@@ -163,7 +163,7 @@ public class BluetoothChatFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {//뺘ㅐ고
-         textview6 = (TextView)view.findViewById(R.id.textView6);
+         //textview6 = (TextView)view.findViewById(R.id.textView6);
         mOutEditText = (EditText) view.findViewById(R.id.edit_text_out);
         mSendButton = (Button) view.findViewById(R.id.button_send);
     }

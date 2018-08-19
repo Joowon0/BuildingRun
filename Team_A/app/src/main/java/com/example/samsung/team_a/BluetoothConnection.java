@@ -153,6 +153,7 @@ public class BluetoothConnection extends Thread {
                         Log.d("response",response);
                         JSONObject responseJSON = new JSONObject(response);
                         lasttime = (String) responseJSON.getString("TIME");
+                        Log.d("LastTime",lasttime);
                         result= 1;
                         is.close();
                         os.close();

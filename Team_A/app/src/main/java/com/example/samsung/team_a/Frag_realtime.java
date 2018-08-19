@@ -152,63 +152,63 @@ public class Frag_realtime extends Fragment {
                                     AirtoServer airtoServer = new AirtoServer();
                                     airtoServer.execute();
                                     if (FCO <= 4.4) {
-                                        progressCo.getProgressDrawable().setColorFilter(Color.rgb(0, 228, 0), PorterDuff.Mode.SRC_IN);
+                                        progressCo.getProgressDrawable().setColorFilter(Color.rgb(51, 204, 51), PorterDuff.Mode.SRC_IN);
                                     } else if ((FCO) <= 9.4) {
-                                        progressCo.getProgressDrawable().setColorFilter(Color.rgb(255, 255, 0), PorterDuff.Mode.SRC_IN);
+                                        progressCo.getProgressDrawable().setColorFilter(Color.rgb(255, 153, 51), PorterDuff.Mode.SRC_IN);
                                     } else if ((FCO) <= 12.4) {
-                                        progressCo.getProgressDrawable().setColorFilter(Color.rgb(255, 126, 0), PorterDuff.Mode.SRC_IN);
-                                    } else {
                                         progressCo.getProgressDrawable().setColorFilter(Color.rgb(255, 0, 0), PorterDuff.Mode.SRC_IN);
+                                    } else {
+                                        progressCo.getProgressDrawable().setColorFilter(Color.rgb(77, 0, 25), PorterDuff.Mode.SRC_IN);
                                     }
 
                                     if ((FNO2) <= 53.0) {
-                                        progressNo2.getProgressDrawable().setColorFilter(Color.rgb(0, 228, 0), PorterDuff.Mode.SRC_IN);
+                                        progressNo2.getProgressDrawable().setColorFilter(Color.rgb(51, 204, 51), PorterDuff.Mode.SRC_IN);
                                     } else if ((FNO2) <= 100.0) {
-                                        progressNo2.getProgressDrawable().setColorFilter(Color.rgb(255, 255, 0), PorterDuff.Mode.SRC_IN);
+                                        progressNo2.getProgressDrawable().setColorFilter(Color.rgb(255, 153, 51), PorterDuff.Mode.SRC_IN);
                                     } else if ((FNO2) <= 360.0) {
-                                        progressNo2.getProgressDrawable().setColorFilter(Color.rgb(255, 126, 0), PorterDuff.Mode.SRC_IN);
-                                    } else {
                                         progressNo2.getProgressDrawable().setColorFilter(Color.rgb(255, 0, 0), PorterDuff.Mode.SRC_IN);
+                                    } else {
+                                        progressNo2.getProgressDrawable().setColorFilter(Color.rgb(77, 0, 25), PorterDuff.Mode.SRC_IN);
                                     }
 
                                     if ((Ftemperature) <= 17.0) {
-                                        progressTemp.getProgressDrawable().setColorFilter(Color.rgb(0, 228, 0), PorterDuff.Mode.SRC_IN);
+                                        progressTemp.getProgressDrawable().setColorFilter(Color.rgb(51, 204, 51), PorterDuff.Mode.SRC_IN);
                                     } else if ((Ftemperature) <= 20.0) {
-                                        progressTemp.getProgressDrawable().setColorFilter(Color.rgb(255, 255, 0), PorterDuff.Mode.SRC_IN);
+                                        progressTemp.getProgressDrawable().setColorFilter(Color.rgb(255, 153, 51), PorterDuff.Mode.SRC_IN);
                                     } else if ((Ftemperature) <= 23.0) {
-                                        progressTemp.getProgressDrawable().setColorFilter(Color.rgb(255, 126, 0), PorterDuff.Mode.SRC_IN);
-                                    } else {
                                         progressTemp.getProgressDrawable().setColorFilter(Color.rgb(255, 0, 0), PorterDuff.Mode.SRC_IN);
+                                    } else {
+                                        progressTemp.getProgressDrawable().setColorFilter(Color.rgb(77, 0, 25), PorterDuff.Mode.SRC_IN);
                                     }
 
                                     if ((FO3) <= 54.0) {
-                                        progressO3.getProgressDrawable().setColorFilter(Color.rgb(0, 228, 0), PorterDuff.Mode.SRC_IN);
+                                        progressO3.getProgressDrawable().setColorFilter(Color.rgb(51, 204, 51), PorterDuff.Mode.SRC_IN);
                                     } else if ((FO3) <= 70.0) {
-                                        progressO3.getProgressDrawable().setColorFilter(Color.rgb(255, 255, 0), PorterDuff.Mode.SRC_IN);
+                                        progressO3.getProgressDrawable().setColorFilter(Color.rgb(255, 153, 51), PorterDuff.Mode.SRC_IN);
                                     } else if ((FO3) <= 85.0) {
-                                        progressO3.getProgressDrawable().setColorFilter(Color.rgb(255, 126, 0), PorterDuff.Mode.SRC_IN);
-                                    } else {
                                         progressO3.getProgressDrawable().setColorFilter(Color.rgb(255, 0, 0), PorterDuff.Mode.SRC_IN);
+                                    } else {
+                                        progressO3.getProgressDrawable().setColorFilter(Color.rgb(77, 0, 25), PorterDuff.Mode.SRC_IN);
                                     }
 
                                     if ((FSO2) <= 35.0) {
-                                        progressSo2.getProgressDrawable().setColorFilter(Color.rgb(0, 228, 0), PorterDuff.Mode.SRC_IN);
+                                        progressSo2.getProgressDrawable().setColorFilter(Color.rgb(51, 204, 51), PorterDuff.Mode.SRC_IN);
                                     } else if ((FSO2) <= 75.0) {
-                                        progressSo2.getProgressDrawable().setColorFilter(Color.rgb(255, 255, 0), PorterDuff.Mode.SRC_IN);
+                                        progressSo2.getProgressDrawable().setColorFilter(Color.rgb(255, 153, 51), PorterDuff.Mode.SRC_IN);
                                     } else if ((FSO2) <= 185.0) {
-                                        progressSo2.getProgressDrawable().setColorFilter(Color.rgb(255, 126, 0), PorterDuff.Mode.SRC_IN);
-                                    } else {
                                         progressSo2.getProgressDrawable().setColorFilter(Color.rgb(255, 0, 0), PorterDuff.Mode.SRC_IN);
+                                    } else {
+                                        progressSo2.getProgressDrawable().setColorFilter(Color.rgb(77, 0, 25), PorterDuff.Mode.SRC_IN);
                                     }
 
                                     if ((FPM25) <= 12.0) {
-                                        progressPm25.getProgressDrawable().setColorFilter(Color.rgb(0, 228, 0), PorterDuff.Mode.SRC_IN);
+                                        progressPm25.getProgressDrawable().setColorFilter(Color.rgb(51, 204, 51), PorterDuff.Mode.SRC_IN);
                                     } else if ((FPM25) <= 35.4) {
-                                        progressPm25.getProgressDrawable().setColorFilter(Color.rgb(255, 255, 0), PorterDuff.Mode.SRC_IN);
+                                        progressPm25.getProgressDrawable().setColorFilter(Color.rgb(255, 153, 51), PorterDuff.Mode.SRC_IN);
                                     } else if ((FPM25) <= 55.4) {
-                                        progressPm25.getProgressDrawable().setColorFilter(Color.rgb(255, 126, 0), PorterDuff.Mode.SRC_IN);
-                                    } else {
                                         progressPm25.getProgressDrawable().setColorFilter(Color.rgb(255, 0, 0), PorterDuff.Mode.SRC_IN);
+                                    } else {
+                                        progressPm25.getProgressDrawable().setColorFilter(Color.rgb(77, 0, 25), PorterDuff.Mode.SRC_IN);
                                     }
 
                                 }
@@ -271,9 +271,9 @@ public class Frag_realtime extends Fragment {
                         result = "Received History Data";
                         Log.d("HISTORY DATA UPDATE :" + String.valueOf(i), "MAC : " + FMAC + " time : " + time + " NO2 : " + FNO2 + " O3 : " + FO3
                                 + " CO : " + FCO + " SO2 : " + FSO2 + " PM25 : " + FPM25 + " temperature : " + Ftemperature);
+
                         Frag_realtime.historytoServer histooserver = new historytoServer();
                         histooserver.execute();
-
                     }
                 } else if (Dtype.equals("R")) {
                     JSONObject jsonRealAir = jsonDataAir.getJSONObject("DATA");
@@ -295,12 +295,14 @@ public class Frag_realtime extends Fragment {
                     Log.d("REAL DATA UPDATE :", "MAC : " + FMAC + " time : " + time + " NO2 : " + FNO2 + " O3 : " + FO3
                             + " CO : " + FCO + " SO2 : " + FSO2 + " PM25 : " + FPM25 + " temperature : " + Ftemperature);
 
-
+                    Frag_realtime.historytoServer histooserver = new historytoServer();
+                    histooserver.execute();
                 }
             } catch (JSONException e) {
                 result = "Received Failed";
                 e.printStackTrace();
             }
+
 
         }
     };

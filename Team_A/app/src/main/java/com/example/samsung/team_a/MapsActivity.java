@@ -126,6 +126,7 @@ public class MapsActivity extends FragmentActivity
     public static double Vlatitude = 0.0, Vlongitude = 0.0;
     public static boolean sensorviewready = false;
     //
+    private int SensorCount = 0;
     private static final String TAG = MapsActivity.class.getSimpleName();
     private GoogleMap mMap;
     private PlaceInfo mPlace;
@@ -185,7 +186,7 @@ public class MapsActivity extends FragmentActivity
     private ArrayList<MarkerItem> SensorAList= new ArrayList<>();
     private Double MarkerLat=0.0,MarkerLong=0.0;
     private String MarkerMac="";
-
+    private Double[] latitude,longitude;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -210,7 +211,7 @@ public class MapsActivity extends FragmentActivity
                 .commit();
         Log.d("fragment","때문이네");
         BluetoothConnection.state = 2;
-       // startActivityForResult(main_to_devicelist, REQUEST_CONNECT_DEVICE_SECURE);
+        // startActivityForResult(main_to_devicelist, REQUEST_CONNECT_DEVICE_SECURE);
 
 
         // Retrieve location and camera position from saved instance state.
@@ -444,6 +445,7 @@ public class MapsActivity extends FragmentActivity
                 SensorAList.clear();
                 while (!isInterrupted()) {
                     try {
+                        SensorCount = 0;
                         Thread.sleep(6000);
                         Log.d("thread","start");
                         runOnUiThread(new Runnable() {
@@ -559,6 +561,8 @@ public class MapsActivity extends FragmentActivity
                                 markeritem.setLat((Double) jsonObject.getDouble("latitude"));
                                 markeritem.setLon((Double) jsonObject.getDouble("longitude"));
                                 SensorAList.add(markeritem);
+
+                                SensorCount++;
                                 Log.d("Sensoralist",SensorAList.toString());
                                 result = true;
                             }

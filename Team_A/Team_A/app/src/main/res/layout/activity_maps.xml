@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    >
+
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:map="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+
+        tools:context=".MapsActivity" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="60dp"
+        android:layout_marginLeft="10dp"
+        android:elevation="10dp"
+        android:background="@drawable/white_border"
+        android:id="@+id/relLayout1"
+        >
+        <ImageView
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:id="@+id/ic_magnfiy"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:src="@drawable/ic_magnify"
+            />
+        <AutoCompleteTextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@+id/ic_magnfiy"
+            android:layout_centerVertical="true"
+            android:textSize="15dp"
+            android:layout_marginRight="60dp"
+            android:textColor="#000"
+            android:id="@+id/input_search"
+            android:background="@null"
+            android:hint="Enter Address, City or Zip code"
+            android:imeOptions="actionSearch"/>
+
+    </RelativeLayout>
+    <ImageView
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_below="@+id/relLayout1"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="15dp"
+        android:scaleType="centerCrop"
+        android:onClick="MapInfoOnclick"
+        android:id="@+id/place_info"
+        android:src="@drawable/ic_info"/>
+
+    <ImageView
+        android:id="@+id/bluetooth_connect"
+        android:layout_width="37dp"
+        android:layout_height="31dp"
+        android:layout_below="@+id/place_info"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="15dp"
+        android:onClick="bluetoothconnect"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_action_device_access_bluetooth_searching" />
+
+    <ScrollView
+        android:id="@+id/scrollview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/map"
+        android:layout_marginBottom="60dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:background="@android:color/white"
+        android:elevation="10dp"
+        android:scrollIndicators="top|bottom">
+
+        <RelativeLayout
+            android:id="@+id/relLayout_context"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="3dp"
+            android:layout_marginRight="3dp"
+            android:layout_marginTop="5dp"
+            android:background="@android:color/white">
+
+            <FrameLayout
+                android:id="@+id/fr_case"
+                android:name="com.example.samsung.team_a.Frag_realtime"
+                android:layout_width="match_parent"
+                android:layout_height="160dp" >
+            </FrameLayout>
+
+</RelativeLayout>
+    </ScrollView>
+
+    <Spinner
+        android:id="@+id/spinner1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignTop="@+id/bluetooth_connect" />
+
+</RelativeLayout>
